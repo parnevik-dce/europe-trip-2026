@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arnevik Family — Europe 2026</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --ink: #1a1a1a; --muted: #666; --faint: #8a8a80; --line: #e5e4df; --line2: #f0efe9;
+    --paper: #fbf9f5; --bg: #f5f4f0; --card: #ffffff;
+    --norway: #378ADD; --germany: #BA7517; --italy: #993556; --green: #1a7a4a;
+    --warn-bg: #fef9ec; --warn-line: #f0d070; --warn-ink: #7a5c00;
+    --info-bg: #eef4ff; --info-line: #c8d8f5; --info-ink: #1a3a7a;
+  }
+  body { font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.5; padding-bottom: 3rem; }
+
+  /* Header */
+  header { background: var(--ink); color: #f4f1ea; padding: 1.1rem 1rem 0.9rem; position: sticky; top: 0; z-index: 50; }
+  header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  header .sub { font-size: 12px; color: #b8b4aa; margin-top: 2px; }
+
+  /* Tabs */
+  nav { display: flex; gap: 4px; overflow-x: auto; padding: 8px 8px 0; background: var(--ink); position: sticky; top: 54px; z-index: 49; scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
+  nav button { flex: 0 0 auto; background: transparent; border: none; color: #b8b4aa; font-size: 13px; font-weight: 500; padding: 9px 13px; border-radius: 8px 8px 0 0; cursor: pointer; white-space: nowrap; font-family: inherit; }
+  nav button.active { background: var(--bg); color: var(--ink); font-weight: 600; }
+
+  main { max-width: 820px; margin: 0 auto; padding: 1rem 0.85rem 2rem; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fade 0.2s ease; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  h2.section { font-size: 15px; font-weight: 700; margin: 1.4rem 0 0.6rem; letter-spacing: 0.01em; }
+  h2.section:first-child { margin-top: 0.3rem; }
+
+  /* City header */
+  .city-header { display: flex; align-items: center; gap: 10px; margin: 1.5rem 0 0.7rem; padding-bottom: 7px; border-bottom: 2px solid var(--line); }
+  .city-header:first-child { margin-top: 0.2rem; }
+  .city-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .city-title { font-size: 17px; font-weight: 600; }
+  .city-dates { font-size: 11px; color: var(--faint); margin-left: auto; text-align: right; }
+
+  /* Day cards — collapsible */
+  .day { background: var(--card); border: 1px solid var(--line); border-radius: 11px; margin-bottom: 9px; overflow: hidden; }
+  .day > summary { list-style: none; cursor: pointer; padding: 12px 15px; display: flex; flex-direction: column; gap: 3px; }
+  .day > summary::-webkit-details-marker { display: none; }
+  .day > summary::after { content: "▾"; position: absolute; right: 16px; color: var(--faint); font-size: 13px; margin-top: 2px; }
+  .day[open] > summary::after { content: "▴"; }
+  .day summary { position: relative; }
+  .day-label { font-size: 10.5px; font-weight: 600; color: var(--faint); letter-spacing: 0.03em; text-transform: uppercase; }
+  .day-title { font-size: 14.5px; font-weight: 600; padding-right: 20px; }
+  .day-body { padding: 0 15px 13px; }
+  .bullets { list-style: none; }
+  .bullets li { font-size: 13px; color: #444; padding: 3px 0 3px 15px; position: relative; }
+  .bullets li::before { content: "•"; position: absolute; left: 3px; color: #bbb; }
+  .bullets li b { color: var(--ink); }
+  .meal-row { display: flex; gap: 9px; margin-top: 8px; padding-top: 8px; border-top: 0.5px solid var(--line2); }
+  .meal-label { font-size: 10px; font-weight: 700; color: var(--faint); text-transform: uppercase; letter-spacing: 0.04em; min-width: 42px; padding-top: 2px; }
+  .meal-text { font-size: 12.5px; color: #555; }
+
+  /* Info blocks (grocery / alternatives) */
+  .info-block { margin: 10px 0 0; padding: 9px 13px; background: #faf9f6; border: 1px solid #ece9e2; border-radius: 8px; }
+  .info-block h5 { font-size: 9.5px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 5px; }
+  .info-block.groc h5 { color: #5a7d3a; }
+  .info-block.alts h5 { color: #7a5c00; }
+  .info-block.walk h5 { color: #2e6b4f; }
+  .info-block .item { display: block; font-size: 12px; color: #555; padding: 1.5px 0; line-height: 1.45; }
+  .info-block .item b { color: #333; font-weight: 600; }
+  .info-block.walk { background: #eef4f0; border-color: #cfe0d6; }
+
+  /* Flags */
+  .flag { border-radius: 9px; padding: 9px 13px; font-size: 12px; margin-bottom: 9px; line-height: 1.5; }
+  .flag.warn { background: var(--warn-bg); border: 1px solid var(--warn-line); color: var(--warn-ink); }
+  .flag.info { background: var(--info-bg); border: 1px solid var(--info-line); color: var(--info-ink); }
+  .flag b { font-weight: 700; }
+
+  /* Transit card */
+  .transit { background: var(--info-bg); border: 1px solid var(--info-line); border-radius: 10px; padding: 11px 15px; margin-bottom: 9px; }
+  .transit .t-title { font-size: 13.5px; font-weight: 600; color: var(--info-ink); margin-bottom: 3px; }
+  .transit .t-detail { font-size: 12px; color: #3a5a9a; }
+
+  /* Overview */
+  .hero { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.2rem; margin-bottom: 1rem; }
+  .hero h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+  .hero .tagline { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .route { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; align-items: center; }
+  .route span.stop { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 3px 9px; font-size: 12px; font-weight: 500; }
+  .route span.arr { color: #bbb; font-size: 12px; }
+  .nights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; margin-top: 1rem; }
+  .nights-cell { background: var(--card); border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px; }
+  .nights-cell .n-city { font-size: 12px; font-weight: 600; }
+  .nights-cell .n-meta { font-size: 11px; color: var(--faint); margin-top: 2px; }
+
+  /* Booking table */
+  .btable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-bottom: 1rem; }
+  .btable td { font-size: 12px; padding: 9px 11px; border-bottom: 0.5px solid var(--line2); vertical-align: top; }
+  .btable tr:last-child td { border-bottom: none; }
+  .btable .b-what { font-weight: 600; color: var(--ink); }
+  .btable .b-when { color: var(--muted); white-space: nowrap; }
+  .btable .b-code { font-family: ui-monospace, monospace; font-size: 11px; color: var(--faint); }
+  .btable a { color: var(--norway); text-decoration: none; font-weight: 600; }
+  .btable a:active { opacity: 0.6; }
+  /* Weather */
+  .wx-city { background: var(--card); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+  .wx-head { display: flex; align-items: center; gap: 9px; padding: 11px 15px; border-bottom: 1px solid var(--line2); }
+  .wx-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+  .wx-name { font-size: 15px; font-weight: 600; }
+  .wx-dates { font-size: 11px; color: var(--faint); margin-left: auto; }
+  .wx-frame { width: 100%; border: none; display: block; background: #eef1f4; }
+  .wx-note { font-size: 11px; color: var(--faint); padding: 7px 15px; }
+  .status { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 5px; letter-spacing: 0.03em; }
+  .status.ok { background: #e3f3ea; color: #1a7a4a; }
+  .status.todo { background: #fdecec; color: #b0432a; }
+
+  /* Packing */
+  .person { background: var(--card); border: 1px solid var(--line); border-radius: 11px; margin-bottom: 10px; overflow: hidden; }
+  .person > summary { list-style: none; cursor: pointer; padding: 12px 15px; font-size: 14.5px; font-weight: 600; position: relative; }
+  .person > summary::-webkit-details-marker { display: none; }
+  .person > summary::after { content: "▾"; position: absolute; right: 16px; color: var(--faint); }
+  .person[open] > summary::after { content: "▴"; }
+  .person .p-body { padding: 0 15px 13px; }
+  .pk-group { margin-top: 10px; }
+  .pk-group h6 { font-size: 10px; font-weight: 700; color: var(--faint); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .pk-group ul { list-style: none; }
+  .pk-group li { font-size: 12.5px; color: #444; padding: 2.5px 0 2.5px 18px; position: relative; }
+  .pk-group li::before { content: "☐"; position: absolute; left: 0; color: #bbb; }
+  .pk-group li.done::before { content: "☑"; color: var(--green); }
+  .pk-group li.note { color: var(--warn-ink); font-style: italic; }
+  .pk-group li.note::before { content: "★"; color: var(--warn-line); }
+
+  .callout { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: 9px; padding: 11px 14px; margin-bottom: 1rem; font-size: 12.5px; color: var(--warn-ink); line-height: 1.5; }
+  .callout b { font-weight: 700; }
+
+  /* Transport */
+  .leg { background: var(--card); border: 1px solid var(--line); border-radius: 11px; margin-bottom: 10px; overflow: hidden; }
+  .leg > summary { list-style: none; cursor: pointer; padding: 12px 15px; position: relative; }
+  .leg > summary::-webkit-details-marker { display: none; }
+  .leg > summary::after { content: "▾"; position: absolute; right: 16px; color: var(--faint); margin-top: 2px; }
+  .leg[open] > summary::after { content: "▴"; }
+  .leg .l-num { font-size: 10px; font-weight: 700; color: var(--faint); letter-spacing: 0.04em; }
+  .leg .l-title { font-size: 14px; font-weight: 600; padding-right: 20px; }
+  .leg .l-when { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  .leg .l-body { padding: 0 15px 13px; }
+  .kv { display: grid; grid-template-columns: 82px 1fr; gap: 4px 10px; margin: 8px 0; }
+  .kv dt { font-size: 11px; font-weight: 700; color: var(--faint); text-transform: uppercase; letter-spacing: 0.03em; padding-top: 1px; }
+  .kv dd { font-size: 12.5px; color: #444; }
+  .gotcha { font-size: 12px; color: #444; padding: 4px 0 4px 15px; position: relative; }
+  .gotcha::before { content: "⚠"; position: absolute; left: 0; font-size: 11px; }
+  .gotcha b { color: var(--ink); }
+
+  footer { text-align: center; font-size: 11px; color: var(--faint); padding: 1.5rem 1rem 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Arnevik Family — Europe 2026</h1>
+  <div class="sub">Aug 12–30 · Norway → Germany → Italy</div>
+</header>
+
+<nav id="tabs">
+  <button class="active" data-tab="overview">Overview</button>
+  <button data-tab="packing">Packing</button>
+  <button data-tab="norway">Norway</button>
+  <button data-tab="germany">Germany</button>
+  <button data-tab="italy">Italy</button>
+  <button data-tab="weather">Weather</button>
+  <button data-tab="transport">Transport</button>
+  <button data-tab="bookings">Bookings</button>
+</nav>
+
+<main>
+
+  <!-- ============ OVERVIEW ============ -->
+  <section class="tab-panel active" id="overview">
+    <div class="hero">
+      <h3>19 days · 6 cities · 3 countries</h3>
+      <div class="tagline">Paul, Christina, Klara (14), Soren (11) · Aug 12–30, 2026</div>
+      <div class="route">
+        <span class="stop">MSP</span><span class="arr">→</span>
+        <span class="stop">Bergen</span><span class="arr">→</span>
+        <span class="stop">Flåm</span><span class="arr">→</span>
+        <span class="stop">Oslo</span><span class="arr">→</span>
+        <span class="stop">Munich</span><span class="arr">→</span>
+        <span class="stop">Naples</span><span class="arr">→</span>
+        <span class="stop">Rome</span><span class="arr">→</span>
+        <span class="stop">MSP</span>
+      </div>
+    </div>
+
+    <div class="nights-grid">
+      <div class="nights-cell"><div class="n-city">Bergen</div><div class="n-meta">Aug 13–16 · 3 nights</div></div>
+      <div class="nights-cell"><div class="n-city">Flåm</div><div class="n-meta">Aug 16 · 1 night</div></div>
+      <div class="nights-cell"><div class="n-city">Oslo</div><div class="n-meta">Aug 17–19 · 2 nights</div></div>
+      <div class="nights-cell"><div class="n-city">Munich</div><div class="n-meta">Aug 19–24 · 5 nights</div></div>
+      <div class="nights-cell"><div class="n-city">Naples</div><div class="n-meta">Aug 24–26 · 2 nights</div></div>
+      <div class="nights-cell"><div class="n-city">Rome</div><div class="n-meta">Aug 26–30 · 4 nights</div></div>
+    </div>
+
+    <h2 class="section">The big picture</h2>
+    <div class="day" style="cursor:default;">
+      <div class="day-body" style="padding:13px 15px;">
+        <ul class="bullets">
+          <li><b>Norway (Aug 13–19):</b> cool and rainy. Bergen, the fjord-crossing Norway-in-a-Nutshell route, then Oslo.</li>
+          <li><b>Germany (Aug 19–24):</b> the relaxed middle. Munich as a base, with Alpine day trips (Zugspitze, Hohenschwangau castle). The only driving days.</li>
+          <li><b>Italy (Aug 24–30):</b> hot and lively. Naples pizza + Pompeii, then four nights in Rome for the big sights.</li>
+          <li><b>Pace:</b> arrival days are recovery-only, every city has a slow afternoon, and roughly half the dinners are grocery/cook-in nights.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flag info" style="margin-top:1rem;">Tap the tabs up top to jump between countries, the packing lists, airport transport, and the full bookings summary. Day cards expand when you tap them.</div>
+  </section>
+
+  <!-- ============ NORWAY ============ -->
+  <section class="tab-panel" id="norway">
+
+    <div class="city-header"><span class="city-dot" style="background:#1D9E75;"></span><span class="city-title">Bergen</span><span class="city-dates">Aug 13–16 · 3 nights</span></div>
+
+    <div class="flag warn">You arrive ~4:50 PM after a long travel day. Day 1 is recovery only — no sightseeing.</div>
+    <div class="flag info">🚢 <b>Cruise ships in port</b> — the compact center (Bryggen, Fish Market) fills with day-trippers mid-morning to ~5 PM. Do popular spots early or late.<br>• <b>Aug 14–16: Viking Neptune</b> (~930 pax, small/adults-only)<br>• <b>Aug 15: Mein Schiff Relax</b> (~3,980 pax — TUI's largest; Aug 15 overlaps both ships, your busiest day)</div>
+
+    <details class="day"><summary><span class="day-label">Thu · Aug 13 — Arrival</span><span class="day-title">Land, check in, decompress</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li>Arrive Bergen (BGO) ~4:50 PM · check in at Airbnb (Badstustredet 3, lockbox)</li>
+          <li>Short walk to the Bryggen waterfront — just to see it, not tour it</li>
+          <li>Early dinner, early bed — jet lag is real with kids</li>
+        </ul>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Pingvinen — cozy Norwegian comfort food near Bryggen. Or groceries at Rema 1000 and eat in.</span></div>
+      </div>
+    </details>
+
+    <details class="day"><summary><span class="day-label">Fri · Aug 14 — Full day</span><span class="day-title">Bryggen + Mount Fløyen</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li>Morning: walk the colorful Bryggen wharf (UNESCO, ~1 hr)</li>
+          <li>Midday: Fløibanen funicular up Mt. Fløyen — trails at the top to roam. <b>Buy tickets ahead</b>: floyen.no/en/floibanen/buy-tickets</li>
+          <li>Afternoon: Fish Market (Fisketorget) — browse, grab a snack</li>
+          <li>Late afternoon: rest at the Airbnb</li>
+        </ul>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Fish &amp; chips or a hot dog at the Fish Market — an experience, not a splurge.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Enhjørningen (the Unicorn) — historic Bryggen spot, simple Norwegian. Or grocery night.</span></div>
+      </div>
+    </details>
+
+    <details class="day"><summary><span class="day-label">Sat · Aug 15 — Full day</span><span class="day-title">Rick Steves' Bergen Walk + prep</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li>Self-guided <b>Rick Steves Bergen Walk</b> — ~11-stop loop, mostly flat, ~2–3 hrs. Ties together fortress, Bryggen, Fish Market.</li>
+          <li>Starts at <b>Bergenhus Fortress</b>, ends at <b>Ole Bulls Plass</b> (by a Bybanen tram stop — handy to scout tomorrow's route).</li>
+          <li>Detour: the walk passes the base of Mt. Fløyen if you'd rather ride the funicular today.</li>
+          <li>Late afternoon: rest and pack — early train tomorrow (8:29 AM).</li>
+        </ul>
+        <div class="info-block walk"><h5>The Walk — 11 stops</h5>
+          <span class="item">1 · <b>Bergenhus Fortress</b> — Håkon's Hall &amp; Rosenkrantz Tower</span>
+          <span class="item">2 · <b>Rampart Perch</b> — harbor viewpoint</span>
+          <span class="item">3 · <b>St. Mary's Church</b> — Bergen's oldest building</span>
+          <span class="item">4 · <b>Bryggens Museum</b> — medieval archaeology</span>
+          <span class="item">5 · <b>Bryggen (Hanseatic Quarter)</b> — iconic wooden wharf</span>
+          <span class="item">6 · <b>Hanseatic Museum</b></span>
+          <span class="item">7 · <b>Hollendergaten</b> — atmospheric back lane</span>
+          <span class="item">8 · <b>Fish Market</b> — grab lunch here</span>
+          <span class="item">9 · <b>Seafarers' Monument</b></span>
+          <span class="item">10 · <b>Torgallmenningen</b> — grand boulevard</span>
+          <span class="item">11 · <b>Ole Bulls Plass</b> — ends near tram + Byparken</span>
+        </div>
+        <div class="info-block groc"><h5>Groceries near Airbnb (Badstustredet 3)</h5>
+          <span class="item"><b>Coop Prix Marken</b> — Marken 3, ~3 min. Open to 10 PM (closed Sun).</span>
+          <span class="item"><b>Lerøy Mat</b> — Torgallmenningen 8, ~6 min. Good for train-trip food.</span>
+        </div>
+        <div class="info-block alts"><h5>Casual dinner alternatives near Bryggen</h5>
+          <span class="item"><b>Bryggeloftet &amp; Stuene</b> — Bryggen 11. Classic seafood, cozy. Reserve.</span>
+          <span class="item"><b>Bryggen Tracteursted</b> — Bryggestredet 2. Traditional Norwegian.</span>
+          <span class="item"><b>Trattoria Basar</b> — Vetrlidsallmenningen 2. Pizza/pasta night.</span>
+          <span class="item"><b>Olivia Zachariasbryggen</b> — Torget 2. Harborside pizza, family-friendly.</span>
+        </div>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Time the walk to hit the Fish Market (stop 8) midday. Or Søstrene Hagelin for open-faced sandwiches.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Grocery night — stock up snacks for tomorrow's train + bus.</span></div>
+      </div>
+    </details>
+
+    <div class="city-header"><span class="city-dot" style="background:var(--norway);"></span><span class="city-title">Norway in a Nutshell → Flåm</span><span class="city-dates">Aug 16 · Transit</span></div>
+    <div class="flag warn">Train departs 8:29 AM but checkout is 11 AM — eat before you go.</div>
+    <div class="transit"><div class="t-title">Sun · Aug 16 — Bergen → Flåm</div><div class="t-detail">8:29 AM Train Bergen→Voss · 10:10 AM Bus Voss→Gudvangen · 1:15 PM Nærøyfjord cruise → Flåm ~3:15 PM · check in Flåm Camping by 8 PM</div></div>
+    <details class="day"><summary><span class="day-label">The fjord day</span><span class="day-title">Fjords, mountains, waterfalls</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li>Sit on the <b>right side</b> of the train leaving Bergen for the best views</li>
+          <li>On the fjord cruise, stand on deck — the walls are breathtaking</li>
+          <li>Arrive Flåm ~3:15 PM · check in at Flåm Camping (<b>pay on arrival, no AMEX</b>)</li>
+          <li>Evening: Flåm is tiny — wander, look at the fjord, decompress</li>
+        </ul>
+        <div class="meal-row"><span class="meal-label">All day</span><span class="meal-text">Pack sandwiches from Bergen — route food is pricey. Flåm has a small grocery (Nærabutikken).</span></div>
+      </div>
+    </details>
+
+    <div class="city-header"><span class="city-dot" style="background:var(--norway);"></span><span class="city-title">Flåm → Oslo</span><span class="city-dates">Aug 17 · Transit</span></div>
+    <div class="flag warn">Train departs 7:20 AM — set two alarms. The Flåm Railway is the most iconic ride in Norway; don't miss it groggy.</div>
+    <div class="transit"><div class="t-title">Mon · Aug 17 — Flåm → Oslo</div><div class="t-detail">7:20 AM Flåm Railway → Myrdal · 8:12 AM Bergen Railway → Oslo, arrive ~1:05 PM</div></div>
+    <details class="day"><summary><span class="day-label">Scenic transit</span><span class="day-title">Flåm Railway → Oslo</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li>Flåm Railway (7:20–8:02 AM) — 20 hairpin turns in 42 min. <b>Sit on the left going up.</b></li>
+          <li>Stops at Kjosfossen waterfall — everyone off for a photo (~5 min)</li>
+          <li>Arrive Oslo Central ~1:05 PM · Airbnb is a 5-min walk (Rostockgata 24)</li>
+          <li>Afternoon: settle in, light walk around Grünerløkka</li>
+        </ul>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Oslo Central has good options, or a casual café in Grünerløkka.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Illegal Burger (Grünerløkka) — unpretentious, kids happy. Or grocery run.</span></div>
+      </div>
+    </details>
+
+    <div class="city-header"><span class="city-dot" style="background:var(--norway);"></span><span class="city-title">Oslo</span><span class="city-dates">Aug 17–19 · 2 nights</span></div>
+    <details class="day"><summary><span class="day-label">Tue · Aug 18 — Full day</span><span class="day-title">Sauna morning + Oslo highlights</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li><b>Booked — 9:30–11:30 AM: Bispen sauna at Sukkerbiten.</b> Floating wood-fired sauna on the fjord by the Opera House. Cold plunge, repeat. Bring swimsuits + towels, arrive ~15 min early.</li>
+          <li>Right after: walk the Opera House roof (2 min away, free, great views)</li>
+          <li>Afternoon: Vigeland Sculpture Park — free, massive, kids love the weird statues</li>
+          <li>Late afternoon: Aker Brygge waterfront, or rest</li>
+          <li>Evening: easy dinner, early pack — flight to Munich 11:45 AM tomorrow</li>
+        </ul>
+        <div class="info-block groc"><h5>Groceries near Airbnb (Rostockgata 24, Bjørvika)</h5>
+          <span class="item"><b>KIWI Barcode</b> — Dronning Eufemias gate 38, ~5 min. Best value, to 11 PM (closed Sun).</span>
+          <span class="item"><b>MENY Bjørvika</b> — Rostockgata 130, ~4 min. Larger; salad + sushi bars.</span>
+        </div>
+        <div class="info-block alts"><h5>Dinner alternatives (Grünerløkka, ~15 min)</h5>
+          <span class="item"><b>Villa Paradiso</b> — Olaf Ryes plass 8. Affordable pizza, family win.</span>
+          <span class="item"><b>Bønder i Byen</b> — Seilduksgata 15. Farm-to-table Norwegian.</span>
+          <span class="item"><b>Fat City</b> — Thorvald Meyers gate 30. Small plates (opens 2 PM).</span>
+          <span class="item"><b>Illegal Burger</b> — the reliable no-fuss standby.</span>
+        </div>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Mathallen food hall — Oslo's best casual food market. Good post-sauna refuel.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Grocery run — easy night before a travel day.</span></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ GERMANY ============ -->
+  <section class="tab-panel" id="germany">
+    <div class="city-header"><span class="city-dot" style="background:var(--germany);"></span><span class="city-title">Munich</span><span class="city-dates">Aug 19–24 · 5 nights</span></div>
+    <div class="flag warn">Checkout Oslo by 11 AM, fly to Munich, arrive ~2 PM, pick up Sixt rental. Host Necdet greets you. <b>Airbnb has an included parking spot</b> — car stays there all week. Confirm the Umweltplakette low-emission sticker at Sixt pickup.</div>
+
+    <details class="day"><summary><span class="day-label">Wed · Aug 19 — Arrival</span><span class="day-title">Fly in, pick up car, settle in</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li>Arrive MUC ~2 PM · pick up Sixt car · drive to Airbnb (Oberanger 6, near Marienplatz)</li>
+          <li>Don't drive into the city center — park the car, use transit in town</li>
+          <li>Short evening stroll to Marienplatz (150m). Don't overdo it.</li>
+        </ul>
+        <div class="info-block groc"><h5>Groceries near Airbnb (Oberanger 6)</h5>
+          <span class="item"><b>Viktualienmarkt</b> — ~4 min. Open-air market: bread, cheese, meats. Closed Sun.</span>
+          <span class="item"><b>EDEKA (Hauptbahnhof)</b> — Arnulfstraße 2, in the station. Sunday-open lifesaver, 7 AM–11 PM daily.</span>
+        </div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Augustiner-Keller beer garden — big, casual, family-friendly. Get the roast chicken.</span></div>
+      </div>
+    </details>
+
+    <details class="day"><summary><span class="day-label">Thu · Aug 20 — Full day</span><span class="day-title">Munich city day</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li>Morning: Marienplatz + Glockenspiel show at 11 AM (touristy but worth once)</li>
+          <li>Midday: English Garden — the Eisbach river surfers are wild, kids love watching</li>
+          <li>Afternoon: Deutsches Museum — hands-on science, one of Europe's best</li>
+          <li>Evening: wander quieter Schwabing</li>
+        </ul>
+        <div class="info-block alts"><h5>Casual Bavarian alternatives near Marienplatz</h5>
+          <span class="item"><b>Augustiner Klosterwirt</b> — Augustinerstraße 1. More authentic than Hofbräuhaus.</span>
+          <span class="item"><b>Der Spöckmeier</b> — Rosenstraße 9. Wirtshaus classics, English menus.</span>
+          <span class="item"><b>Wildmosers am Marienplatz</b> — Marienplatz 22. Glockenspiel view, family-friendly.</span>
+          <span class="item"><b>Wirtshaus in der Au</b> — across the river; famous dumplings. Book weekends.</span>
+        </div>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Viktualienmarkt — grab bread, cheese, meats and eat at a picnic table.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Hofbräuhaus — touristy but do it once. Pretzels, roast pork. Kids amazed.</span></div>
+      </div>
+    </details>
+
+    <details class="day"><summary><span class="day-label">Fri · Aug 21 — Alpine day trip</span><span class="day-title">Zugspitze — Germany's highest peak (drive)</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li>Drive to Garmisch-Partenkirchen (~1.5 hrs). Active-family Alpine day: cogwheel train + cable car to a 2,962m summit, snow in August, glacier, huge views.</li>
+          <li>Two ways up: <b>German side</b> from Garmisch (cogwheel train to glacier ~90 min, then cable car), or <b>Austrian side</b> cable car from Ehrwald (quicker, often cheaper). Bring passports for the Austrian ascent.</li>
+          <li>Budget most of the day. Layers + closed shoes — cold and windy up top even in August.</li>
+          <li><b>Weather matters:</b> the summit clouds over often. Check the webcam that morning; if socked in, swap with Aug 22.</li>
+          <li>Back to Munich late afternoon — easy night.</li>
+        </ul>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Eat at the summit/glacier station, or pack sandwiches from a Munich bakery.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Grocery night, or a Bavarian Wirtshaus from the list above.</span></div>
+      </div>
+    </details>
+
+    <details class="day"><summary><span class="day-label">Sat · Aug 22 — Slow / flex day</span><span class="day-title">Recover in Munich (or optional Salzburg)</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li><b>Note:</b> this sits between two Alpine drive-days (Zugspitze Fri, Hohenschwangau Sun) — default is a genuine slow city day. Don't stack a third big drive unless everyone's game.</li>
+          <li><b>Default — slow Munich day:</b> sleep in, then Olympia Park (climb the Olympiaturm) + free BMW Welt where kids climb in the cars. Or the English Garden.</li>
+          <li><b>Optional — Salzburg, Austria:</b> ~1.5 hrs each way. Old Town, Mozart's birthplace, Sound of Music. Bring passports. Skip the wider Berchtesgaden loop.</li>
+        </ul>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Munich day: grocery picnic in Olympia Park. Salzburg day: eat in the Old Town.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">A Bavarian Wirtshaus, or an easy grocery night.</span></div>
+      </div>
+    </details>
+
+    <details class="day"><summary><span class="day-label">Sun · Aug 23 — Castle day trip</span><span class="day-title">Hohenschwangau + Alpsee (tour 3:05 PM)</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li><b>Booked — Hohenschwangau Castle, Tour #[see phone], 3:05 PM (English audio), 4 pax.</b> Valid ONLY at that time — no late admission, no refund.</li>
+          <li>Pick up / scan tickets at the <b>Ticketcenter in Hohenschwangau village</b> (Alpseestraße 12). QR on a charged phone (bright screen) or printed B&amp;W.</li>
+          <li><b>Timing:</b> in the village ~1 hr before (by ~2 PM), at the castle 10–15 min before, courtyard 5 min before. Expect waits at shuttle + carriage stops. Hohenschwangau is the shorter, easier uphill (~15–20 min walk, or shuttle/carriage).</li>
+          <li>Drive from Munich ~1.5–2 hrs. Leave ~10:30–11 AM — no dawn start needed.</li>
+          <li>Morning-into-midday: <b>Alpsee lake</b> (swim, paddle) + the <b>Marienbrücke</b> viewpoint for the classic Neuschwanstein photo, before your 3:05 slot.</li>
+          <li>Back to Munich by evening — <b>a full day, not a slow one.</b> Pack tonight for tomorrow's early flight.</li>
+        </ul>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Lakeside at Alpsee, or in Hohenschwangau village before the tour. Or pack a picnic.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Back in Munich → grocery night, clean out the fridge. Pack carry-on only for MUC→NAP. Confirm car return: Sixt by 9 AM, leave Oberanger ~7:45 AM.</span></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ ITALY ============ -->
+  <section class="tab-panel" id="italy">
+    <div class="city-header"><span class="city-dot" style="background:var(--italy);"></span><span class="city-title">Naples</span><span class="city-dates">Aug 24–26 · 2 nights</span></div>
+    <div class="flag warn">Return Sixt car by 9:00 AM — flight departs 10:30 AM. Don't be late!</div>
+
+    <details class="day"><summary><span class="day-label">Mon · Aug 24 — Arrival</span><span class="day-title">Fly in, pizza, done</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li>Arrive Naples ~12:15 PM · Metro Line 1 to Toledo (near Airbnb, Vico Lungo Teatro Nuovo)</li>
+          <li>Check in ~3 PM (keypad) · drop bags, walk the Spanish Quarter</li>
+          <li>Naples is loud, chaotic, alive — lean into it</li>
+        </ul>
+        <div class="info-block groc"><h5>Groceries near Airbnb (Vico Lungo Teatro Nuovo)</h5>
+          <span class="item"><b>Sole365</b> — Via Incoronata 14, ~4 min. Well-stocked, open daily incl. Sun.</span>
+          <span class="item"><b>La Genuina</b> — Via Pignasecca 13, ~5 min. Deli — fresh buffalo mozzarella, sandwiches.</span>
+        </div>
+        <div class="info-block alts"><h5>Casual eats near the Airbnb (bring cash)</h5>
+          <span class="item"><b>Spuzzuliann pe' Tuledo</b> — Via Toledo 395. Cheap, fast street pizza.</span>
+          <span class="item"><b>Trattoria e Pizzeria Dell'Olio</b> — Via Cisterna dell'Olio 2. Big portions, less touristy.</span>
+          <span class="item"><b>10 in Teglia</b> — Via Toledo 367. Superb pan/slice pizza.</span>
+          <span class="item"><b>Pizzeria 7 Soldi</b> — Vico Tre Re a Toledo 6. Pizza + seafood, family-friendly (closed Wed).</span>
+        </div>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Pizzeria Sorbillo — the original, legendary Neapolitan pizza. Go early, lines form fast.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">L'Antica Pizzeria da Michele — Margherita or Marinara. That's it. Perfection.</span></div>
+      </div>
+    </details>
+
+    <details class="day"><summary><span class="day-label">Tue · Aug 25 — Day trip</span><span class="day-title">Pompeii (booked shuttle bus)</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li><b>Booked — City Sightseeing shuttle, 1st race.</b> Order [see phone] · 4 seats (2 adult, 2 child). Departs <b>9:25 AM</b>, returns <b>1:45 PM</b>. Voucher on your phone (add to Wallet).</li>
+          <li>Direct Naples↔Pompeii coach — no Circumvesuviana transfers, air-conditioned. Confirm the Naples pickup point on the voucher the night before.</li>
+          <li>~3 hrs at the site. Bring water + hats — brutally hot and shadeless in August.</li>
+          <li>Back in Naples ~1:45 PM · afternoon open: rest, or a Posillipo lido/sea swim (Bagno Elena) to beat the heat</li>
+          <li>Evening: walk the Lungomare with a gelato · <b>pack for Rome tonight</b> — train is 11:35 AM tomorrow</li>
+        </ul>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Pack snacks for Pompeii — site food is mediocre. Real meal back in Naples after 1:45.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Trattoria Da Nennella — cheap, chaotic, fun. Cash only, communal tables.</span></div>
+      </div>
+    </details>
+
+    <div class="city-header"><span class="city-dot" style="background:var(--italy);"></span><span class="city-title">Rome</span><span class="city-dates">Aug 26–30 · 4 nights</span></div>
+
+    <details class="day"><summary><span class="day-label">Wed · Aug 26 — Arrival</span><span class="day-title">Train to Rome, settle, evening stroll</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li><b>Booked — Frecciarossa 9422, Napoli Centrale 11:35 AM → Roma Termini 12:55 PM.</b> PNR [see phone] · Coach 4, seats 8A–8D · FrecciaFAMILY. Add barcodes to Wallet.</li>
+          <li>Naples checkout 10 AM — taxi to Napoli Centrale by ~11:00. Tap the barcode at the platform gate. <b>Doors close 1 min before departure</b> — be at the binario ~15 min early.</li>
+          <li>Arrive Roma Termini 12:55 PM — Airbnb (Via Leopardi 54) is a short walk / one Metro stop (Vittorio Emanuele)</li>
+          <li>Drop bags (check-in ~3 PM — message host or store bags), lunch, settle in</li>
+          <li>Late afternoon: walk toward the Colosseum (~15 min) — see it lit up, don't go in (booked tomorrow at 1 PM)</li>
+        </ul>
+        <div class="info-block groc"><h5>Groceries near Airbnb (Via Leopardi 54)</h5>
+          <span class="item"><b>Tuday Conad</b> — Termini station (-1 floor), ~6 min. Daily 5:30 AM–11:30 PM.</span>
+          <span class="item"><b>Selli International Food Store</b> — Via dello Statuto 28, ~3 min. Small but well-stocked.</span>
+        </div>
+        <div class="info-block alts"><h5>Casual dinner alternatives near the Airbnb</h5>
+          <span class="item"><b>Trattoria Dell'Omo</b> — Via Vicenza 18. Best carbonara near Termini; cheap (closed Sun).</span>
+          <span class="item"><b>Trattoria Cecio</b> — Via Principe Amedeo 104. Big menu, great tiramisu.</span>
+          <span class="item"><b>Osteria Emasi</b> — Via Principe Amedeo 75a. Seafood + Roman classics.</span>
+          <span class="item"><b>Il Cuore di Roma</b> — Via Giovanni Amendola 91. Reliable all-day spot.</span>
+        </div>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Arrive ~1 PM — eat near the Airbnb. Forno / alimentari for a quick first bite.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Roscioli Salumeria — legendary Roman deli + wine bar. Pasta + charcuterie.</span></div>
+      </div>
+    </details>
+
+    <details class="day"><summary><span class="day-label">Thu · Aug 27 — Full day</span><span class="day-title">Ancient Rome (Colosseum booked 1:00 PM)</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li><b>Booked — Colosseum entry 1:00 PM, all 4.</b> Booking [see phone] · "Colosseo–Foro Romano Palatino 24H." Paul &amp; Christina €18; Klara &amp; Soren free (under 18).</li>
+          <li><b>Arrive by 12:45 PM.</b> Bring photo ID for everyone — names checked against tickets; passports for the kids. Timed 75-min one-way route.</li>
+          <li><b>Morning first: Roman Forum + Palatine Hill</b> — covered by the same ticket, one entrance in the 24h window. Do them in the cooler morning before the 1 PM Colosseum slot.</li>
+          <li>Lunch near the Colosseo right before your 1 PM entry, then walk over.</li>
+          <li>Note: ticket does NOT include Arena / Underground / SUPER sites — levels 1 &amp; 2.</li>
+          <li>Rest mid/late afternoon — hot. Evening: Piazza Navona stroll</li>
+        </ul>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Trattoria Luzzi — by the Colosseum, cash-only, no-frills classics. Perfect before your 1 PM slot.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Grocery night — carbonara from the Airbnb. Pecorino + guanciale from the nearest alimentari.</span></div>
+      </div>
+    </details>
+
+    <details class="day"><summary><span class="day-label">Fri · Aug 28 — Full day</span><span class="day-title">Vatican + Trastevere</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li><b>Booked — 10:00 AM guided tour (English), 4 pax.</b> Code [see phone] · under Paul Arnevik. Vatican Museums + Sistine Chapel, guided group with earphones.</li>
+          <li><b>Arrive 30 min early (by 9:30 AM).</b> Entrance: Viale Vaticano. Show voucher + photo ID to Customer Care outside (reserved line), then the "GUIDED TOURS" desk inside.</li>
+          <li>Sistine Chapel is the endpoint of the Museums route — the tour covers it. <b>Dress code: knees + shoulders covered.</b></li>
+          <li>St. Peter's Basilica is free — climb the dome if the kids have energy (separate line, same dress code)</li>
+          <li>Afternoon: cross to Trastevere — wander, gelato, sit at a fountain</li>
+        </ul>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Da Enzo al 29 in Trastevere — simple pasta, local crowd. Walk there after the Vatican.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Tonnarello in Trastevere — lively, affordable, classic Roman pastas. Sit outside.</span></div>
+      </div>
+    </details>
+
+    <details class="day"><summary><span class="day-label">Sat · Aug 29 — Relaxed final day</span><span class="day-title">Gelato, fountains, souvenir day</span></summary>
+      <div class="day-body">
+        <ul class="bullets">
+          <li>Morning: Trevi Fountain (by 8 AM it's quiet), Spanish Steps, Campo de' Fiori market</li>
+          <li>Afternoon: free time — let the kids pick. A gelato crawl counts as an activity.</li>
+          <li>Evening: last supper — make it a good one</li>
+          <li>Tonight: pack, confirm airport logistics. Checkout 10 AM, flight 2:45 PM from FCO.</li>
+        </ul>
+        <div class="meal-row"><span class="meal-label">Lunch</span><span class="meal-text">Forno Campo de' Fiori — pizza al taglio (by the slice). The Roman way.</span></div>
+        <div class="meal-row"><span class="meal-label">Dinner</span><span class="meal-text">Osteria dell'Angelo — neighborhood spot, set menu, honest Cucina Romana. Book ahead.</span></div>
+      </div>
+    </details>
+
+    <div class="city-header"><span class="city-dot" style="background:#888780;"></span><span class="city-title">Departure</span><span class="city-dates">Aug 30 · Home</span></div>
+    <div class="transit"><div class="t-title">Sun · Aug 30 — Checkout 10 AM → FCO → MSP</div><div class="t-detail">Walk to Termini · Leonardo Express to FCO (~32 min, every 15 min) · arrive FCO ~12:30 PM · DL0299 departs 2:45 PM · home ~6:26 PM MSP</div></div>
+  </section>
+
+  <!-- ============ PACKING ============ -->
+  <section class="tab-panel" id="packing">
+    <div class="callout"><b>👗 Vatican dress code (Aug 28) — everyone:</b> shoulders AND knees covered, or you're turned away. No shorts (incl. Paul &amp; Soren), no tank tops. In the heat: light long layers — linen pants, sleeved tee, or a packable scarf over shoulders.</div>
+
+    <h2 class="section">Before you leave — to-do</h2>
+    <details class="person" open><summary>Pre-trip checklist</summary>
+      <div class="p-body"><div class="pk-group"><ul>
+        <li>Schedule lawn mowing with Alfonso (2 mows: Aug 12–30)</li>
+        <li>Adjust pool settings</li>
+        <li>Decide: turn off water and/or water heater?</li>
+        <li>Set thermostat</li>
+        <li>Arrange airport transportation (Aug 12, depart ~7:00 PM)</li>
+        <li class="done">Hold mail — Austin &amp; Kelly</li>
+        <li>Raina: prep everything + schedule drop-off</li>
+        <li class="done">Download offline Google Maps for all cities</li>
+        <li>Download Bolt app + set up payment (rideshare — Bergen; Yango as backup)</li>
+        <li>Clean dishes + empty dishwasher · take out garbage · clean coffee maker + fridge</li>
+      </ul></div></div>
+    </details>
+
+    <h2 class="section">Shared / family</h2>
+    <details class="person"><summary>👨‍👩‍👧‍👦 Shared (pack once, split bags)</summary>
+      <div class="p-body">
+        <div class="pk-group"><h6>Documents &amp; money</h6><ul>
+          <li>Passports (all 4)</li>
+          <li class="note">Physical debit card — NOT just Apple Wallet. Most EU ATMs need the card inserted.</li>
+          <li>Print itinerary + booking confirmations · scan passports to Drive · phone backup keys</li>
+          <li>Hidden passport holder / anti-theft crossbody</li>
+        </ul></div>
+        <div class="pk-group"><h6>Meds &amp; first aid</h6><ul>
+          <li>Special gummies · Ibuprofen · Band-aids + blister pads</li>
+        </ul></div>
+        <div class="pk-group"><h6>Tech &amp; power</h6><ul>
+          <li>Laptop + charger · portable battery · EU Type C adapter · pirate box</li>
+        </ul></div>
+        <div class="pk-group"><h6>Toiletries (shared)</h6><ul>
+          <li>Toothpaste · shampoo/soap (or buy in Bergen) · sunscreen (buy in Europe)</li>
+        </ul></div>
+        <div class="pk-group"><h6>Laundry &amp; gear</h6><ul>
+          <li>Laundry pods — buy in Bergen (first stop) · daypack · handheld fan (Italy heat)</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <h2 class="section">Per person</h2>
+    <details class="person"><summary>🧑 Paul</summary>
+      <div class="p-body">
+        <div class="pk-group"><h6>Personal / entertainment</h6><ul>
+          <li>AirPods · Kindle · travel pillow · earplugs · sunglasses · hat · water bottle</li>
+        </ul></div>
+        <div class="pk-group"><h6>Grooming</h6><ul><li>Electric trimmer · razor · portable bidet · deodorant</li></ul></div>
+        <div class="pk-group"><h6>Clothing</h6><ul>
+          <li>Fjällräven jacket + light rain layer</li>
+          <li>T-shirts (4, linen/wicking) · polos (2) · sweaters (2) · gym shirt</li>
+          <li>Shorts (2) · pants (2) · gym shorts</li>
+          <li>Underwear (5) · compression undies (2) · socks (5) · swimsuit</li>
+          <li class="note">Vatican day (Aug 28): light long pants + a sleeved tee — no shorts allowed</li>
+          <li>Shoes — wear one, pack one · sandals/flip flops</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="person"><summary>👩 Christina</summary>
+      <div class="p-body">
+        <div class="pk-group"><h6>⚠️ Don't forget</h6><ul>
+          <li class="note">CPAP machine — carry-on only (never checked); bring EU adapter, confirm EU voltage; distilled water can be bought locally</li>
+        </ul></div>
+        <div class="pk-group"><h6>Personal</h6><ul><li>Sunglasses · hat · water bottle · earplugs · deodorant · skincare</li></ul></div>
+        <div class="pk-group"><h6>Clothing</h6><ul>
+          <li>Rain jacket + light rain layer</li>
+          <li>Tops (4, linen/wicking) · nicer tops (2) · sweaters (2)</li>
+          <li>Shorts (2) · pants (2) · underwear (5) · socks (5) · swimsuit</li>
+          <li class="note">Vatican day (Aug 28): knee-length+ bottoms + covered shoulders. Pack a light scarf/shawl.</li>
+          <li>Walking shoes — wear one, pack one · sandals</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="person"><summary>🧒 Klara (14)</summary>
+      <div class="p-body">
+        <div class="pk-group"><h6>Personal</h6><ul><li>Phone + charger · headphones · sunglasses · water bottle</li></ul></div>
+        <div class="pk-group"><h6>Clothing</h6><ul>
+          <li>Rain jacket — critical for Norway-in-a-Nutshell day · light layer/hoodie</li>
+          <li>Tops (4) · sweaters/hoodies (2) · shorts (2) · pants (2)</li>
+          <li>Underwear (5) · socks (5) · swimsuit (confirm packed)</li>
+          <li class="note">Vatican day (Aug 28): knee-length+ bottoms + sleeves/covered shoulders (or a scarf)</li>
+          <li>Walking shoes — wear one, pack one · sandals</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <details class="person"><summary>🧒 Soren (11)</summary>
+      <div class="p-body">
+        <div class="pk-group"><h6>Personal</h6><ul><li>Headphones · sunglasses · water bottle · downloaded shows/games + cards</li></ul></div>
+        <div class="pk-group"><h6>Clothing</h6><ul>
+          <li>Rain jacket — critical for Norway-in-a-Nutshell day · light layer/hoodie</li>
+          <li>T-shirts (4) · sweaters/hoodies (2) · shorts (2) · pants (2)</li>
+          <li>Underwear (5) · socks (5) · swimsuit (confirm packed)</li>
+          <li class="note">Vatican day (Aug 28): light long pants + a sleeved tee — no shorts allowed</li>
+          <li>Walking shoes — wear one, pack one · sandals</li>
+        </ul></div>
+      </div>
+    </details>
+
+    <div class="flag info" style="margin-top:0.5rem;">Carry-on only, all trip. Lufthansa's ~8 kg limit at Munich is the binding constraint — pack so all 4 bags meet it from day one. Laundry at every Airbnb; wash every ~5–6 days.</div>
+  </section>
+
+  <!-- ============ WEATHER ============ -->
+  <section class="tab-panel" id="weather">
+    <div class="flag info">Live forecast map per city (powered by Windy). Drag/zoom the map; use the timeline at the bottom to scrub the coming days (°F). Each card links to the full AccuWeather forecast.</div>
+
+    <div class="wx-city">
+      <div class="wx-head"><span class="wx-dot" style="background:#1D9E75;"></span><span class="wx-name">Bergen</span><span class="wx-dates">Aug 13–16 · rainy, 60–68°F</span></div>
+      <iframe class="wx-frame" height="300" src="https://embed.windy.com/embed2.html?lat=60.39&lon=5.32&detailLat=60.39&detailLon=5.32&width=650&height=300&zoom=8&level=surface&overlay=rain&menu=&message=&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=%C2%B0F&radarRange=-1" loading="lazy"></iframe>
+      <div class="wx-note">Full forecast: <a href="https://www.accuweather.com/en/no/bergen/258220/weather-forecast/258220" target="_blank" rel="noopener">AccuWeather ↗</a></div>
+    </div>
+
+    <div class="wx-city">
+      <div class="wx-head"><span class="wx-dot" style="background:#378ADD;"></span><span class="wx-name">Flåm</span><span class="wx-dates">Aug 16</span></div>
+      <iframe class="wx-frame" height="300" src="https://embed.windy.com/embed2.html?lat=60.86&lon=7.11&detailLat=60.86&detailLon=7.11&width=650&height=300&zoom=8&level=surface&overlay=rain&menu=&message=&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=%C2%B0F&radarRange=-1" loading="lazy"></iframe>
+      <div class="wx-note">Full forecast: <a href="https://www.accuweather.com/en/no/flam/2-255311_1_al/weather-forecast/2-255311_1_al?type=locality&amp;city=fl%C3%A5m" target="_blank" rel="noopener">AccuWeather ↗</a></div>
+    </div>
+
+    <div class="wx-city">
+      <div class="wx-head"><span class="wx-dot" style="background:#378ADD;"></span><span class="wx-name">Oslo</span><span class="wx-dates">Aug 17–19</span></div>
+      <iframe class="wx-frame" height="300" src="https://embed.windy.com/embed2.html?lat=59.91&lon=10.75&detailLat=59.91&detailLon=10.75&width=650&height=300&zoom=8&level=surface&overlay=rain&menu=&message=&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=%C2%B0F&radarRange=-1" loading="lazy"></iframe>
+      <div class="wx-note">Full forecast: <a href="https://www.accuweather.com/en/no/oslo/254946/weather-forecast/254946?type=locality&amp;city=oslo" target="_blank" rel="noopener">AccuWeather ↗</a></div>
+    </div>
+
+    <div class="wx-city">
+      <div class="wx-head"><span class="wx-dot" style="background:#BA7517;"></span><span class="wx-name">Munich</span><span class="wx-dates">Aug 19–24 · mild, 68–80°F</span></div>
+      <iframe class="wx-frame" height="300" src="https://embed.windy.com/embed2.html?lat=48.14&lon=11.58&detailLat=48.14&detailLon=11.58&width=650&height=300&zoom=8&level=surface&overlay=rain&menu=&message=&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=%C2%B0F&radarRange=-1" loading="lazy"></iframe>
+      <div class="wx-note">Full forecast: <a href="https://www.accuweather.com/en/de/munich/80331/weather-forecast/178086?type=locality&amp;city=munich" target="_blank" rel="noopener">AccuWeather ↗</a></div>
+    </div>
+
+    <div class="wx-city">
+      <div class="wx-head"><span class="wx-dot" style="background:#993556;"></span><span class="wx-name">Naples</span><span class="wx-dates">Aug 24–26 · hot, 82–92°F</span></div>
+      <iframe class="wx-frame" height="300" src="https://embed.windy.com/embed2.html?lat=40.85&lon=14.27&detailLat=40.85&detailLon=14.27&width=650&height=300&zoom=8&level=surface&overlay=temp&menu=&message=&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=%C2%B0F&radarRange=-1" loading="lazy"></iframe>
+      <div class="wx-note">Full forecast: <a href="https://www.accuweather.com/en/it/naples/212466/weather-forecast/212466?type=locality&amp;city=naples" target="_blank" rel="noopener">AccuWeather ↗</a></div>
+    </div>
+
+    <div class="wx-city">
+      <div class="wx-head"><span class="wx-dot" style="background:#993556;"></span><span class="wx-name">Rome</span><span class="wx-dates">Aug 26–30 · hot, 82–92°F</span></div>
+      <iframe class="wx-frame" height="300" src="https://embed.windy.com/embed2.html?lat=41.90&lon=12.50&detailLat=41.90&detailLon=12.50&width=650&height=300&zoom=8&level=surface&overlay=temp&menu=&message=&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=%C2%B0F&radarRange=-1" loading="lazy"></iframe>
+      <div class="wx-note">Full forecast: <a href="https://www.accuweather.com/en/it/rome/213490/weather-forecast/213490?type=locality&amp;city=rome" target="_blank" rel="noopener">AccuWeather ↗</a></div>
+    </div>
+
+    <div class="flag warn">The maps show live conditions + a scrubbable forecast timeline, most useful within ~7–10 days of travel. Tap any city's AccuWeather link for the full day-by-day high/low view.</div>
+  </section>
+
+  <!-- ============ TRANSPORT ============ -->
+  <section class="tab-panel" id="transport">
+    <div class="flag info">Chosen option for each leg. <b>Oslo (Aug 17) and Rome (Aug 26) arrivals are by train</b> — both Airbnbs ~5-min walk from the station, no transport needed.</div>
+
+    <details class="leg"><summary><span class="l-num">1 · BERGEN AIRPORT → AIRBNB</span><div class="l-title">Bybanen light rail (Line 1)</div><div class="l-when">Thu Aug 13 · arrival ~4:50 PM</div></summary>
+      <div class="l-body">
+        <dl class="kv">
+          <dt>Route</dt><dd>Bergen Airport (Flesland) → Badstustredet 3, by Bryggen</dd>
+          <dt>Cost</dt><dd>~$12–14 total (≈42 NOK/adult, kids ~half)</dd>
+          <dt>Duration</dt><dd>~45–50 min + ~5–8 min walk with bags</dd>
+          <dt>Tickets</dt><dd>Skyss app or platform machine before boarding</dd>
+        </dl>
+        <div class="gotcha"><b>Backup:</b> if jet-lag hits hard, switch to Bolt/taxi (~$55–75, ~25 min, door-to-door).</div>
+        <div class="gotcha">Buy tram tickets before boarding — no onboard sales. Save the Skyss app now.</div>
+      </div>
+    </details>
+
+    <details class="leg"><summary><span class="l-num">2 · OSLO → AIRPORT (MUNICH FLIGHT)</span><div class="l-title">Flytoget airport express</div><div class="l-when">Tue Aug 19 · flight LH2453 departs 11:45 AM</div></summary>
+      <div class="l-body">
+        <dl class="kv">
+          <dt>Route</dt><dd>Rostockgata 24 (5-min walk to Oslo Central) → Oslo Airport</dd>
+          <dt>Cost</dt><dd>~$42 total — ~230 NOK/adult; kids under 16 ride FREE</dd>
+          <dt>Duration</dt><dd>~20 min, departs every 10 min</dd>
+          <dt>Timing</dt><dd>Leave Airbnb ~8:15–8:30 AM → next Flytoget → terminal ~9:00 AM</dd>
+          <dt>Tickets</dt><dd>Tap contactless at the gate, or Flytoget app — no pre-booking</dd>
+        </dl>
+        <div class="gotcha"><b>Why:</b> kids free makes the express nearly as cheap as the slow train, but faster.</div>
+      </div>
+    </details>
+
+    <details class="leg"><summary><span class="l-num">3 · MUNICH AIRPORT ↔ CITY</span><div class="l-title">Drive Sixt rental; park at Airbnb all week</div><div class="l-when">Arrive Aug 19 ~2 PM · Depart Aug 24 · flight 10:30 AM</div></summary>
+      <div class="l-body">
+        <dl class="kv">
+          <dt>Route</dt><dd>Munich Airport (MUC) ↔ Oberanger 6, by Marienplatz</dd>
+          <dt>Cost</dt><dd>Fuel only — Airbnb parking spot included (saves ~€125–175)</dd>
+          <dt>Drive</dt><dd>~40–60 min each way (~40 km)</dd>
+          <dt>Sixt</dt><dd>Booking #[see phone] · pickup Aug 19 2 PM · RETURN by 9:00 AM Aug 24</dd>
+        </dl>
+        <div class="gotcha"><b>In-city:</b> leave the car parked. Use U-Bahn / S-Bahn / trams. Car out only for day trips.</div>
+        <div class="gotcha"><b>Umweltplakette:</b> confirm the green low-emission sticker is on the windshield at pickup — central Munich is a low-emission zone.</div>
+        <div class="gotcha"><b>Parking access:</b> message host Necdet for spot location, access (gate code/number?), height limit.</div>
+        <div class="gotcha"><b>Tight departure:</b> 9 AM return for a 10:30 flight is snug. Leave Oberanger by ~7:45 AM.</div>
+      </div>
+    </details>
+
+    <details class="leg"><summary><span class="l-num">4 · NAPLES AIRPORT → AIRBNB</span><div class="l-title">Official white taxi, fixed fare</div><div class="l-when">Mon Aug 24 · arrival ~12:15 PM</div></summary>
+      <div class="l-body">
+        <dl class="kv">
+          <dt>Route</dt><dd>Naples Airport (Capodichino) → Vico Lungo Teatro Nuovo 67</dd>
+          <dt>Cost</dt><dd>~€19–25 flat for the whole car (not per person) — bring ~€30 cash</dd>
+          <dt>Duration</dt><dd>~20–30 min door-to-door (airport is only ~6 km out)</dd>
+          <dt>Payment</dt><dd>Assume CASH. Ask "Carta?" before getting in.</dd>
+        </dl>
+        <div class="gotcha"><b>Say:</b> "tariffa predeterminata per il centro" and confirm the number before you roll.</div>
+        <div class="gotcha"><b>Official taxi only:</b> ignore anyone offering rides inside the terminal. Walk to the white-taxi rank outside.</div>
+        <div class="gotcha"><b>Cash / ATM:</b> get euros at a bank ATM (BNL, Intesa — NOT Euronet) after baggage claim. Pull €150–200.</div>
+        <div class="gotcha"><b>3 PM check-in:</b> keypad, host Alessandro. Message for early access, or stash bags at Radical Storage / Bounce (~€5–6/bag).</div>
+      </div>
+    </details>
+
+    <details class="leg"><summary><span class="l-num">5 · ROME → FIUMICINO (FLIGHT HOME)</span><div class="l-title">Leonardo Express (walk to Termini)</div><div class="l-when">Sun Aug 30 · flight DL0299 departs 2:45 PM</div></summary>
+      <div class="l-body">
+        <dl class="kv">
+          <dt>Route</dt><dd>Via Leopardi 54 (walk to Termini) → Fiumicino (FCO)</dd>
+          <dt>Cost</dt><dd>~€42 total — €14/adult; Soren free; Klara full fare</dd>
+          <dt>Duration</dt><dd>32 min nonstop, every 15 min</dd>
+          <dt>Timing</dt><dd>Leave Airbnb ~10:15 AM → next train → FCO by ~11:15 AM</dd>
+          <dt>Tickets</dt><dd>Termini machines or Trenitalia app. Board only the direct "Leonardo Express."</dd>
+        </dl>
+        <div class="gotcha"><b>Backup:</b> fixed-fare white taxi is €50 flat, whole car, ~45–55 min. Only ~€8 more.</div>
+        <div class="gotcha"><b>FCO is slow:</b> transatlantic departure, passport control + security eat time. Be there by ~11:45 AM.</div>
+      </div>
+    </details>
+
+    <h2 class="section">Across the whole chain</h2>
+    <div class="day" style="cursor:default;"><div class="day-body" style="padding:13px 15px;"><ul class="bullets">
+      <li><b>Apps (install on home wifi):</b> Bolt (+Yango) for Norway rideshare, Skyss (Bergen tram), Flytoget (Oslo), Trenitalia (Rome). Set up payment cards first.</li>
+      <li><b>Cash matters most in Naples.</b> Norway + Germany run on card; Naples needs euros. The airport-ATM stop is the linchpin.</li>
+      <li><b>Physical debit card</b> — bring it, not just Apple Wallet. Set a Wells Fargo travel notice so it isn't frozen.</li>
+      <li><b>Two tightest mornings:</b> Munich departure (9 AM car return → 10:30 flight) and Rome → FCO. Neither has slack for dawdling.</li>
+    </ul></div></div>
+  </section>
+
+  <!-- ============ BOOKINGS ============ -->
+  <section class="tab-panel" id="bookings">
+    <div class="flag info">Confirmation numbers are masked here for privacy — the actual codes are on Dad's phone / in the booking emails.</div>
+
+    <h2 class="section">Flights</h2>
+    <table class="btable">
+      <tr><td class="b-what">MSP → Amsterdam → Bergen<br><span class="b-code">DL0164 (MSP→AMS) 9:50 PM–1:00 PM · 2h10m layover · DL9310 (AMS→BGO, KLM) → 4:50 PM · conf [•••]</span></td><td class="b-when">Aug 12–13</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what">Oslo → Munich<br><span class="b-code">LH2453 · 11:45 AM → 2:00 PM · conf [•••]</span></td><td class="b-when">Aug 19</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what">Munich → Naples<br><span class="b-code">LH1876 · 10:30 AM → 12:15 PM · conf [•••]</span></td><td class="b-when">Aug 24</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what">Rome (FCO) → MSP<br><span class="b-code">DL0299 · 2:45 PM → 6:26 PM · 10h41m nonstop · conf [•••]</span></td><td class="b-when">Aug 30</td><td><span class="status ok">Booked</span></td></tr>
+    </table>
+
+    <h2 class="section">Trains &amp; transfers</h2>
+    <table class="btable">
+      <tr><td class="b-what">Norway in a Nutshell<br><span class="b-code">Bergen→Flåm→Oslo · [•••]</span></td><td class="b-when">Aug 16–17</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what">Frecciarossa 9422<br><span class="b-code">Napoli C. 11:35 → Roma T. 12:55 · PNR [•••]</span></td><td class="b-when">Aug 26</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what">City Sightseeing → Pompeii<br><span class="b-code">1st race · 9:25 AM · order [•••]</span></td><td class="b-when">Aug 25</td><td><span class="status ok">Booked</span></td></tr>
+    </table>
+
+    <h2 class="section">Activities &amp; tours</h2>
+    <table class="btable">
+      <tr><td class="b-what">Bispen sauna, Sukkerbiten<br><span class="b-code">9:30–11:30 AM</span></td><td class="b-when">Aug 18</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what">Hohenschwangau Castle<br><span class="b-code">English audio · 3:05 PM · Tour #[•••]</span></td><td class="b-when">Aug 23</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what">Colosseum + Forum + Palatine<br><span class="b-code">1:00 PM · booking [•••]</span></td><td class="b-when">Aug 27</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what">Vatican Museums + Sistine<br><span class="b-code">Guided (English) · 10:00 AM · code [•••]</span></td><td class="b-when">Aug 28</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what">Fløibanen funicular<br><span class="b-code">Buy online ahead</span></td><td class="b-when">Aug 14</td><td><span class="status todo">To buy</span></td></tr>
+    </table>
+
+    <h2 class="section">Lodging</h2>
+    <table class="btable">
+      <tr><td class="b-what"><a href="https://www.airbnb.com/rooms/1203424006952642256" target="_blank" rel="noopener">Bergen Airbnb ↗</a><br><span class="b-code">Badstustredet 3 · lockbox</span></td><td class="b-when">Aug 13–16</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what"><a href="https://www.flaam-camping.no/#cabins" target="_blank" rel="noopener">Flåm Camping ↗</a><br><span class="b-code">Pay on arrival · no AMEX</span></td><td class="b-when">Aug 16</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what"><a href="https://www.airbnb.com/rooms/536228412808896135" target="_blank" rel="noopener">Oslo Airbnb ↗</a><br><span class="b-code">Rostockgata 24</span></td><td class="b-when">Aug 17–19</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what"><a href="https://www.airbnb.com/rooms/835334595596290031" target="_blank" rel="noopener">Munich Airbnb ↗</a><br><span class="b-code">Oberanger 6 · host Necdet · parking incl.</span></td><td class="b-when">Aug 19–24</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what"><a href="https://www.airbnb.com/rooms/48099314" target="_blank" rel="noopener">Naples Airbnb ↗</a><br><span class="b-code">Vico Lungo Teatro Nuovo 67 · keypad · host Alessandro</span></td><td class="b-when">Aug 24–26</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what"><a href="https://www.airbnb.com/rooms/26660744" target="_blank" rel="noopener">Rome Airbnb ↗</a><br><span class="b-code">Via Leopardi 54 · near Termini</span></td><td class="b-when">Aug 26–30</td><td><span class="status ok">Booked</span></td></tr>
+      <tr><td class="b-what">Sixt rental car<br><span class="b-code">MUC · booking #[•••]</span></td><td class="b-when">Aug 19–24</td><td><span class="status ok">Booked</span></td></tr>
+    </table>
+
+    <h2 class="section">Still to book</h2>
+    <table class="btable">
+      <tr><td class="b-what">Fløibanen funicular tickets</td><td class="b-when">Aug 14</td><td><span class="status todo">To buy</span></td></tr>
+      <tr><td class="b-what">Bagno Elena / Posillipo lido (optional)</td><td class="b-when">Aug 25</td><td><span class="status todo">Optional</span></td></tr>
+      <tr><td class="b-what">Zugspitze tickets (buy day-of or ahead)</td><td class="b-when">Aug 21</td><td><span class="status todo">To buy</span></td></tr>
+    </table>
+  </section>
+
+</main>
+
+<footer>Arnevik Family · Europe 2026 · last updated Aug 2026</footer>
+
+<script>
+  const tabs = document.querySelectorAll('#tabs button');
+  const panels = document.querySelectorAll('.tab-panel');
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = btn.dataset.tab;
+      tabs.forEach(b => b.classList.toggle('active', b === btn));
+      panels.forEach(p => p.classList.toggle('active', p.id === t));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Weather widgets are drawn by an external script that may skip elements
+      // hidden at page load. Re-inject the loader when the Weather tab opens so
+      // the cards render at full size.
+      if (t === 'weather') {
+        var old = document.getElementById('weatherwidget-io-js');
+        if (old) old.remove();
+        var js = document.createElement('script');
+        js.id = 'weatherwidget-io-js';
+        js.src = 'https://weatherwidget.io/js/widget.min.js';
+        document.body.appendChild(js);
+      }
+    });
+  });
+</script>
+</body>
+</html>
