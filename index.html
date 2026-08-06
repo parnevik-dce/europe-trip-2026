@@ -155,6 +155,32 @@
   .gotcha b { color: var(--ink); }
 
   footer { text-align: center; font-size: 11px; color: var(--faint); padding: 1.5rem 1rem 0; }
+
+  /* Print button (screen only) */
+  #printAllBtn { background: rgba(255,255,255,0.08); border: none; color: #f4f1ea; font-size: 13px; font-weight: 500; padding: 8px 12px; border-radius: 9px; cursor: pointer; white-space: nowrap; margin-left: auto; display: flex; align-items: center; gap: 6px; font-family: inherit; }
+  #printAllBtn:active { background: rgba(255,255,255,0.16); }
+  #printCover { display: none; }
+
+  /* Print-all mode: everything expands and stacks into one document */
+  @media print {
+    header, nav#tabs, #sidebarOverlay, #printAllBtn, #menuToggle { display: none !important; }
+    body { padding-bottom: 0; background: #fff; }
+    body.print-all #printCover { display: block; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 3px solid #000; }
+    body.print-all #printCover h1 { font-size: 24px; font-weight: 800; }
+    body.print-all #printCover p { font-size: 12px; color: #555; margin-top: 4px; }
+    body.print-all main { max-width: 100%; padding: 0.4in; }
+    body.print-all .tab-panel { display: block !important; page-break-after: always; }
+    body.print-all .tab-panel:last-of-type { page-break-after: auto; }
+    body.print-all #weather { display: none !important; }
+    body.print-all .tab-panel[data-print-title]::before {
+      content: attr(data-print-title);
+      display: block; font-size: 21px; font-weight: 800; color: #000;
+      margin: 0 0 12px; padding-bottom: 6px; border-bottom: 3px solid #000;
+    }
+    body.print-all .day, body.print-all .person, body.print-all .leg { break-inside: avoid; border: 1px solid #ccc; }
+    body.print-all .day > summary::after, body.print-all .person > summary::after, body.print-all .leg > summary::after { display: none; }
+    body.print-all iframe { display: none !important; }
+  }
 </style>
 </head>
 <body>
@@ -162,6 +188,7 @@
 <header>
   <button id="menuToggle" aria-label="Open menu">☰</button>
   <h1>Arnevik Family — Europe 2026</h1>
+  <button id="printAllBtn">🖨️ Print full trip</button>
 </header>
 
 <div id="sidebarOverlay"></div>
@@ -179,8 +206,13 @@
 
 <main>
 
+  <div id="printCover">
+    <h1>Arnevik Family — Europe 2026</h1>
+    <p>Full trip printout · Norway → Germany → Italy · Live weather forecasts omitted — check the Weather tab online for current conditions.</p>
+  </div>
+
   <!-- ============ OVERVIEW ============ -->
-  <section class="tab-panel active" id="overview">
+  <section class="tab-panel active" id="overview" data-print-title="Overview">
     <div class="hero">
       <h3>19 days · 6 cities · 3 countries</h3>
       <div class="tagline">Paul, Christina, Klara, Soren · Aug 12–30, 2026</div>
@@ -221,7 +253,7 @@
   </section>
 
   <!-- ============ NORWAY ============ -->
-  <section class="tab-panel" id="norway">
+  <section class="tab-panel" id="norway" data-print-title="Norway">
 
     <div class="city-header"><span class="city-dot" style="background:#1D9E75;"></span><span class="city-title">Bergen</span><span class="city-dates">Aug 13–16 · 3 nights</span></div>
 
@@ -347,7 +379,7 @@
   </section>
 
   <!-- ============ GERMANY ============ -->
-  <section class="tab-panel" id="germany">
+  <section class="tab-panel" id="germany" data-print-title="Germany">
     <div class="city-header"><span class="city-dot" style="background:var(--germany);"></span><span class="city-title">Munich</span><span class="city-dates">Aug 19–24 · 5 nights</span></div>
     <div class="flag warn">Checkout Oslo by 11 AM, fly to Munich, arrive ~2 PM, pick up Sixt rental. Host Necdet greets you. <b>Airbnb has an included parking spot</b> — car stays there all week. Confirm the Umweltplakette low-emission sticker at Sixt pickup.</div>
 
@@ -429,7 +461,7 @@
   </section>
 
   <!-- ============ ITALY ============ -->
-  <section class="tab-panel" id="italy">
+  <section class="tab-panel" id="italy" data-print-title="Italy">
     <div class="city-header"><span class="city-dot" style="background:var(--italy);"></span><span class="city-title">Naples</span><span class="city-dates">Aug 24–26 · 2 nights</span></div>
     <div class="flag warn">Return Sixt car by 9:00 AM — flight departs 10:30 AM. Don't be late!</div>
 
@@ -542,7 +574,7 @@
   </section>
 
   <!-- ============ PACKING ============ -->
-  <section class="tab-panel" id="packing">
+  <section class="tab-panel" id="packing" data-print-title="Packing List">
     <div class="callout"><b>👗 Vatican dress code (Aug 28) — everyone:</b> shoulders AND knees covered, or you're turned away. No shorts (incl. Paul &amp; Soren), no tank tops. In the heat: light long layers — linen pants, sleeved tee, or a packable scarf over shoulders.</div>
 
     <h2 class="section">Before you leave — to-do</h2>
@@ -709,7 +741,7 @@
   </section>
 
   <!-- ============ TRANSPORT ============ -->
-  <section class="tab-panel" id="transport">
+  <section class="tab-panel" id="transport" data-print-title="Airport Transportation">
     <div class="flag info">Chosen option for each leg. <b>Oslo (Aug 17) and Rome (Aug 26) arrivals are by train</b> — both Airbnbs ~5-min walk from the station, no transport needed.</div>
 
     <details class="leg"><summary><span class="l-num">1 · BERGEN AIRPORT → AIRBNB</span><div class="l-title">Bybanen light rail (Line 1)</div><div class="l-when">Thu Aug 13 · arrival ~4:50 PM</div></summary>
@@ -792,7 +824,7 @@
   </section>
 
   <!-- ============ BOOKINGS ============ -->
-  <section class="tab-panel" id="bookings">
+  <section class="tab-panel" id="bookings" data-print-title="Flights & Bookings">
     <div class="flag info">Confirmation numbers are masked here for privacy — the actual codes are on Dad's phone / in the booking emails.</div>
 
     <h2 class="section">Flights</h2>
@@ -846,7 +878,6 @@
   const menuToggle = document.getElementById('menuToggle');
   const sidebar = document.getElementById('tabs');
   const overlay = document.getElementById('sidebarOverlay');
-
   function openSidebar() {
     sidebar.classList.add('open');
     overlay.classList.add('open');
@@ -882,6 +913,23 @@
       }
     });
   });
+  // Print Full Trip: force every collapsed card open, hide weather, print, then restore
+  const printAllBtn = document.getElementById('printAllBtn');
+  let savedOpenState = [];
+  printAllBtn.addEventListener('click', () => {
+    closeSidebar();
+    const detailsEls = document.querySelectorAll('details');
+    savedOpenState = Array.from(detailsEls).map(d => d.open);
+    detailsEls.forEach(d => { d.open = true; });
+    document.body.classList.add('print-all');
+    window.print();
+  });
+  function restoreAfterPrint() {
+    const detailsEls = document.querySelectorAll('details');
+    detailsEls.forEach((d, i) => { d.open = savedOpenState[i]; });
+    document.body.classList.remove('print-all');
+  }
+  window.addEventListener('afterprint', restoreAfterPrint);
 </script>
 </body>
 </html>
