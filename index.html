@@ -101,6 +101,18 @@
   .nights-cell .n-city { font-size: 12px; font-weight: 600; }
   .nights-cell .n-meta { font-size: 11px; color: var(--faint); margin-top: 2px; }
 
+  /* Trip calendar */
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 0.75rem; }
+  .cal-dow { font-size: 9.5px; font-weight: 700; text-align: center; color: var(--faint); text-transform: uppercase; letter-spacing: 0.03em; padding-bottom: 3px; }
+  .cal-cell { background: var(--card); border: 1px solid var(--line); border-top: 3px solid var(--accent, var(--line)); border-radius: 7px; min-height: 58px; padding: 5px 4px 4px; }
+  .cal-cell.empty { background: transparent; border: 1px dashed var(--line2); border-top: 1px dashed var(--line2); opacity: 0.5; }
+  .cal-date { font-size: 11px; font-weight: 700; color: var(--ink); }
+  .cal-cell.empty .cal-date { color: var(--faint); font-weight: 500; }
+  .cal-city { font-size: 9px; font-weight: 600; margin-top: 3px; line-height: 1.25; color: var(--muted); }
+  .cal-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+  .cal-legend span { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+  .cal-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+
   /* Booking table */
   .btable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-bottom: 1rem; }
   .btable td { font-size: 12px; padding: 9px 11px; border-bottom: 0.5px solid var(--line2); vertical-align: top; }
@@ -160,6 +172,44 @@
 
   footer { text-align: center; font-size: 11px; color: var(--faint); padding: 1.5rem 1rem 0; }
 
+  /* Languages */
+  .print-toggle { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); margin-bottom: 1rem; cursor: pointer; }
+  .print-toggle input { width: 16px; height: 16px; accent-color: var(--norway); cursor: pointer; }
+  .lang-picker { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .lang-picker button { flex: 1; min-width: 96px; padding: 11px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; color: var(--ink); }
+  .lang-picker button.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .lang-panel { display: none; }
+  .lang-panel.active { display: block; }
+  .lang-panel h3 { display: none; }
+  .phrase-group { margin-bottom: 14px; }
+  .phrase-group h4 { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid var(--line2); }
+  .phrase-table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .phrase-table td { font-size: 12.5px; padding: 8px 10px; border-bottom: 0.5px solid var(--line2); vertical-align: top; }
+  .phrase-table tr:last-child td { border-bottom: none; }
+  .phrase-table .p-en { color: var(--muted); width: 30%; }
+  .phrase-table .p-native { font-weight: 600; color: var(--ink); width: 35%; }
+  .phrase-table .p-phon { color: var(--faint); font-style: italic; width: 35%; }
+
+  /* Currency */
+  .calc-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; margin-bottom: 1rem; }
+  .calc-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line2); }
+  .calc-row:last-child { border-bottom: none; }
+  .calc-flag { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+  .calc-label { font-size: 11px; font-weight: 700; color: var(--faint); width: 40px; flex-shrink: 0; }
+  .calc-row input { flex: 1; font-size: 17px; font-weight: 600; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); font-family: inherit; min-width: 0; }
+  .calc-row input:focus { outline: 2px solid var(--norway); outline-offset: -1px; }
+  .rate-note { font-size: 11.5px; color: var(--faint); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line2); }
+
+  /* Print: show every language + hide interactive calculator, keep quick-ref table */
+  @media print {
+    body.print-all .print-toggle { display: none !important; }
+    body.print-all #languages:not(.include-in-print) { display: none !important; }
+    body.print-all .lang-picker { display: none !important; }
+    body.print-all .lang-panel { display: block !important; page-break-inside: avoid; margin-bottom: 20px; }
+    body.print-all .lang-panel h3 { display: block !important; font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    body.print-all .calc-card { display: none !important; }
+  }
+
   #printCover { display: none; }
 
   /* Print-all mode: everything expands and stacks into one document */
@@ -177,8 +227,10 @@
     body.print-all #norway { order: 3; }
     body.print-all #germany { order: 4; }
     body.print-all #italy { order: 5; }
-    body.print-all #transport { order: 6; }
-    body.print-all #bookings { order: 7; }
+    body.print-all #languages { order: 6; }
+    body.print-all #currency { order: 7; }
+    body.print-all #transport { order: 8; }
+    body.print-all #bookings { order: 9; }
     body.print-all .tab-panel:last-of-type { page-break-after: auto; }
     body.print-all #weather { display: none !important; }
     body.print-all .tab-panel[data-print-title]::before {
@@ -208,6 +260,8 @@
   <button data-tab="germany">🇩🇪 Germany</button>
   <button data-tab="italy">🇮🇹 Italy</button>
   <button data-tab="weather">☀️ Weather</button>
+  <button data-tab="languages">🗣️ Languages</button>
+  <button data-tab="currency">💱 Currency</button>
   <button data-tab="transport">🚕 Airport Transportation</button>
   <button data-tab="bookings">✈️ Flights & Bookings</button>
   <div class="side-spacer"></div>
@@ -246,6 +300,50 @@
       <div class="nights-cell"><div class="n-city">Munich</div><div class="n-meta">Aug 19–24 · 5 nights</div></div>
       <div class="nights-cell"><div class="n-city">Naples</div><div class="n-meta">Aug 24–26 · 2 nights</div></div>
       <div class="nights-cell"><div class="n-city">Rome</div><div class="n-meta">Aug 26–30 · 4 nights</div></div>
+    </div>
+
+    <h2 class="section">Trip calendar</h2>
+    <div class="cal-grid">
+      <div class="cal-dow">Sun</div><div class="cal-dow">Mon</div><div class="cal-dow">Tue</div><div class="cal-dow">Wed</div><div class="cal-dow">Thu</div><div class="cal-dow">Fri</div><div class="cal-dow">Sat</div>
+
+      <div class="cal-cell empty"><div class="cal-date">9</div></div>
+      <div class="cal-cell empty"><div class="cal-date">10</div></div>
+      <div class="cal-cell empty"><div class="cal-date">11</div></div>
+      <div class="cal-cell" style="--accent:#888780;"><div class="cal-date">12</div><div class="cal-city">Depart MSP</div></div>
+      <div class="cal-cell" style="--accent:#1D9E75;"><div class="cal-date">13</div><div class="cal-city">Bergen</div></div>
+      <div class="cal-cell" style="--accent:#1D9E75;"><div class="cal-date">14</div><div class="cal-city">Bergen</div></div>
+      <div class="cal-cell" style="--accent:#1D9E75;"><div class="cal-date">15</div><div class="cal-city">Bergen</div></div>
+
+      <div class="cal-cell" style="--accent:var(--norway);"><div class="cal-date">16</div><div class="cal-city">Flåm</div></div>
+      <div class="cal-cell" style="--accent:var(--norway);"><div class="cal-date">17</div><div class="cal-city">Oslo</div></div>
+      <div class="cal-cell" style="--accent:var(--norway);"><div class="cal-date">18</div><div class="cal-city">Oslo</div></div>
+      <div class="cal-cell" style="--accent:var(--germany);"><div class="cal-date">19</div><div class="cal-city">Munich</div></div>
+      <div class="cal-cell" style="--accent:var(--germany);"><div class="cal-date">20</div><div class="cal-city">Munich</div></div>
+      <div class="cal-cell" style="--accent:var(--germany);"><div class="cal-date">21</div><div class="cal-city">Munich</div></div>
+      <div class="cal-cell" style="--accent:var(--germany);"><div class="cal-date">22</div><div class="cal-city">Munich</div></div>
+
+      <div class="cal-cell" style="--accent:var(--germany);"><div class="cal-date">23</div><div class="cal-city">Munich</div></div>
+      <div class="cal-cell" style="--accent:var(--italy);"><div class="cal-date">24</div><div class="cal-city">Naples</div></div>
+      <div class="cal-cell" style="--accent:var(--italy);"><div class="cal-date">25</div><div class="cal-city">Naples</div></div>
+      <div class="cal-cell" style="--accent:var(--italy);"><div class="cal-date">26</div><div class="cal-city">Rome</div></div>
+      <div class="cal-cell" style="--accent:var(--italy);"><div class="cal-date">27</div><div class="cal-city">Rome</div></div>
+      <div class="cal-cell" style="--accent:var(--italy);"><div class="cal-date">28</div><div class="cal-city">Rome</div></div>
+      <div class="cal-cell" style="--accent:var(--italy);"><div class="cal-date">29</div><div class="cal-city">Rome</div></div>
+
+      <div class="cal-cell" style="--accent:#888780;"><div class="cal-date">30</div><div class="cal-city">Fly home</div></div>
+      <div class="cal-cell empty"><div class="cal-date">31</div></div>
+      <div class="cal-cell empty"><div class="cal-date">1</div></div>
+      <div class="cal-cell empty"><div class="cal-date">2</div></div>
+      <div class="cal-cell empty"><div class="cal-date">3</div></div>
+      <div class="cal-cell empty"><div class="cal-date">4</div></div>
+      <div class="cal-cell empty"><div class="cal-date">5</div></div>
+    </div>
+    <div class="cal-legend">
+      <span><i style="background:#888780;"></i>Travel day</span>
+      <span><i style="background:#1D9E75;"></i>Bergen</span>
+      <span><i style="background:#378ADD;"></i>Flåm / Oslo</span>
+      <span><i style="background:#BA7517;"></i>Munich</span>
+      <span><i style="background:#993556;"></i>Naples / Rome</span>
     </div>
 
     <h2 class="section">The big picture</h2>
@@ -751,6 +849,280 @@
     <div class="flag warn">The maps show live conditions + a scrubbable forecast timeline, most useful within ~7–10 days of travel. Tap any city's AccuWeather link for the full day-by-day high/low view.</div>
   </section>
 
+  <!-- ============ LANGUAGES ============ -->
+  <section class="tab-panel" id="languages" data-print-title="Language Phrases">
+    <div class="flag info">Same phrases, all three languages — pick a country to see it. Practical travel phrases, not a full course.</div>
+
+    <label class="print-toggle"><input type="checkbox" id="includeLangPrint"> Include language phrases when printing full trip (off by default)</label>
+
+    <div class="lang-picker">
+      <button class="active" data-lang="norwegian">🇳🇴 Norwegian</button>
+      <button data-lang="german">🇩🇪 German</button>
+      <button data-lang="italian">🇮🇹 Italian</button>
+    </div>
+
+    <!-- NORWEGIAN -->
+    <div class="lang-panel active" id="lang-norwegian">
+      <h3>🇳🇴 Norwegian</h3>
+      <div class="phrase-group"><h4>✈️ Airport &amp; Flights</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">Where is the check-in counter for [airline]?</td><td class="p-native">Hvor er innsjekkingsskranken for [flyselskap]?</td><td class="p-phon">vor air INN-shek-king-skran-ken for</td></tr>
+          <tr><td class="p-en">Where is baggage claim?</td><td class="p-native">Hvor er bagasjeutlevering?</td><td class="p-phon">vor air ba-GA-sje-oot-le-ve-ring</td></tr>
+          <tr><td class="p-en">My luggage is lost.</td><td class="p-native">Bagasjen min er borte.</td><td class="p-phon">ba-GA-sjen min air BOR-teh</td></tr>
+          <tr><td class="p-en">Where is the boarding gate [gate number]?</td><td class="p-native">Hvor er gate [nummer]?</td><td class="p-phon">vor air gate NOOM-mer</td></tr>
+          <tr><td class="p-en">Is this flight on time?</td><td class="p-native">Er dette flyet i rute?</td><td class="p-phon">air DEH-teh FLEW-eh ee ROO-teh</td></tr>
+          <tr><td class="p-en">Where is security check?</td><td class="p-native">Hvor er sikkerhetskontrollen?</td><td class="p-phon">vor air SIK-ker-hets-kon-trol-len</td></tr>
+          <tr><td class="p-en">Where is terminal [number]?</td><td class="p-native">Hvor er terminal [nummer]?</td><td class="p-phon">vor air ter-mi-NAHL</td></tr>
+          <tr><td class="p-en">Where is the currency exchange?</td><td class="p-native">Hvor er vekslingskontoret?</td><td class="p-phon">vor air VEKS-lings-kon-toh-reh</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🚖 Taxis &amp; Transportation</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">Take me to this address, please.</td><td class="p-native">Kjør meg til denne adressen, takk.</td><td class="p-phon">khur may til DEH-neh ah-DRESS-en tahk</td></tr>
+          <tr><td class="p-en">How much to get to [destination]?</td><td class="p-native">Hvor mye koster det til [sted]?</td><td class="p-phon">vor MEW-eh KOS-ter deh til</td></tr>
+          <tr><td class="p-en">Please turn on the meter.</td><td class="p-native">Kan du slå på taksameteret?</td><td class="p-phon">kan doo slaw paw tak-sah-MEH-teh-reh</td></tr>
+          <tr><td class="p-en">Stop here, please.</td><td class="p-native">Stopp her, takk.</td><td class="p-phon">stop hair tahk</td></tr>
+          <tr><td class="p-en">Can I pay with a credit card?</td><td class="p-native">Kan jeg betale med kort?</td><td class="p-phon">kan yai beh-TAH-leh meh kort</td></tr>
+          <tr><td class="p-en">Where is the taxi stand?</td><td class="p-native">Hvor er taxiholdeplassen?</td><td class="p-phon">vor air TAK-see-hol-deh-plas-sen</td></tr>
+          <tr><td class="p-en">Where is the bus stop?</td><td class="p-native">Hvor er bussholdeplassen?</td><td class="p-phon">vor air BOOS-hol-deh-plas-sen</td></tr>
+          <tr><td class="p-en">When is the next bus/train?</td><td class="p-native">Når går neste buss/tog?</td><td class="p-phon">nor gawr NES-teh boos/tohg</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🚆 Train Stations &amp; Subways</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">Where is the ticket office?</td><td class="p-native">Hvor er billettkontoret?</td><td class="p-phon">vor air bi-LETT-kon-toh-reh</td></tr>
+          <tr><td class="p-en">One ticket to [destination], please.</td><td class="p-native">En billett til [sted], takk.</td><td class="p-phon">en bi-LETT til ... tahk</td></tr>
+          <tr><td class="p-en">Round-trip ticket to [destination], please.</td><td class="p-native">Tur-retur til [sted], takk.</td><td class="p-phon">toor-reh-TOOR til ... tahk</td></tr>
+          <tr><td class="p-en">Which platform for the train to [destination]?</td><td class="p-native">Hvilket spor går toget til [sted] fra?</td><td class="p-phon">VIL-ket spoor gawr TOH-geh til ... frah</td></tr>
+          <tr><td class="p-en">Does this train stop at [station]?</td><td class="p-native">Stopper dette toget på [stasjon]?</td><td class="p-phon">STOP-per DEH-teh TOH-geh paw</td></tr>
+          <tr><td class="p-en">Is this seat taken?</td><td class="p-native">Er dette setet opptatt?</td><td class="p-phon">air DEH-teh SEH-teh OP-taht</td></tr>
+          <tr><td class="p-en">Where is the subway station?</td><td class="p-native">Hvor er T-banestasjonen?</td><td class="p-phon">vor air TEH-bah-neh-stah-shoo-nen</td></tr>
+          <tr><td class="p-en">How do I get to the city center?</td><td class="p-native">Hvordan kommer jeg til sentrum?</td><td class="p-phon">VOR-dahn KOM-mer yai til SEN-troom</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🍽️ Restaurants &amp; Cafés</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">A table for [number] people, please.</td><td class="p-native">Et bord til [antall] personer, takk.</td><td class="p-phon">et boor til ... per-SOO-ner tahk</td></tr>
+          <tr><td class="p-en">Can I see the menu, please?</td><td class="p-native">Kan jeg få se menyen?</td><td class="p-phon">kan yai faw seh meh-NEW-en</td></tr>
+          <tr><td class="p-en">Do you have an English menu?</td><td class="p-native">Har dere meny på engelsk?</td><td class="p-phon">har DEH-reh meh-NEW paw ENG-elsk</td></tr>
+          <tr><td class="p-en">I would like to order [food/drink].</td><td class="p-native">Jeg vil gjerne bestille [mat/drikke].</td><td class="p-phon">yai vil YAIR-neh beh-STIL-leh</td></tr>
+          <tr><td class="p-en">I am allergic to [ingredient].</td><td class="p-native">Jeg er allergisk mot [ingrediens].</td><td class="p-phon">yai air ah-LER-gisk moht</td></tr>
+          <tr><td class="p-en">Water, please.</td><td class="p-native">Vann, takk.</td><td class="p-phon">vahn tahk</td></tr>
+          <tr><td class="p-en">The bill, please.</td><td class="p-native">Regningen, takk.</td><td class="p-phon">RYE-ning-en tahk</td></tr>
+          <tr><td class="p-en">Is service included?</td><td class="p-native">Er service inkludert?</td><td class="p-phon">air SUR-vis in-kloo-DEHRT</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🛍️ Stores, Shops &amp; Grocery Stores</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">How much does this cost?</td><td class="p-native">Hvor mye koster dette?</td><td class="p-phon">vor MEW-eh KOS-ter DEH-teh</td></tr>
+          <tr><td class="p-en">I am just looking, thank you.</td><td class="p-native">Jeg bare ser, takk.</td><td class="p-phon">yai BAH-reh sehr tahk</td></tr>
+          <tr><td class="p-en">Do you have this in a different size/color?</td><td class="p-native">Har dere denne i en annen størrelse/farge?</td><td class="p-phon">har DEH-reh DEH-neh ee en AH-nen STUR-rel-seh/FAR-geh</td></tr>
+          <tr><td class="p-en">Can I pay by card?</td><td class="p-native">Kan jeg betale med kort?</td><td class="p-phon">kan yai beh-TAH-leh meh kort</td></tr>
+          <tr><td class="p-en">Can I get a receipt, please?</td><td class="p-native">Kan jeg få kvittering, takk?</td><td class="p-phon">kan yai faw kvi-TEH-ring tahk</td></tr>
+          <tr><td class="p-en">Where are the shopping carts/baskets?</td><td class="p-native">Hvor er handlevognene/kurvene?</td><td class="p-phon">vor air HAHND-leh-vong-neh-neh/KOOR-veh-neh</td></tr>
+          <tr><td class="p-en">Do you have a bag?</td><td class="p-native">Har du en pose?</td><td class="p-phon">har doo en POH-seh</td></tr>
+          <tr><td class="p-en">Where is the scale to weigh produce?</td><td class="p-native">Hvor er vekten for å veie grønnsaker?</td><td class="p-phon">vor air VEK-ten for oh VAY-eh GRUNN-sah-ker</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🗺️ On the Street &amp; Directions</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">Where is the restroom?</td><td class="p-native">Hvor er toalettet?</td><td class="p-phon">vor air too-ah-LET-teh</td></tr>
+          <tr><td class="p-en">Where is the nearest ATM?</td><td class="p-native">Hvor er nærmeste minibank?</td><td class="p-phon">vor air NAIR-mes-teh MI-ni-bank</td></tr>
+          <tr><td class="p-en">Where is the hospital/pharmacy?</td><td class="p-native">Hvor er sykehuset/apoteket?</td><td class="p-phon">vor air SEW-keh-hoo-seh/ah-poh-TEH-keh</td></tr>
+          <tr><td class="p-en">Where is the tourist information office?</td><td class="p-native">Hvor er turistinformasjonen?</td><td class="p-phon">vor air too-RIST-in-for-mah-shoo-nen</td></tr>
+          <tr><td class="p-en">I am lost. Can you help me?</td><td class="p-native">Jeg har gått meg bort. Kan du hjelpe meg?</td><td class="p-phon">yai har gawt may bort. kan doo YEL-peh may</td></tr>
+          <tr><td class="p-en">Turn left.</td><td class="p-native">Sving til venstre.</td><td class="p-phon">sving til VEN-streh</td></tr>
+          <tr><td class="p-en">Turn right.</td><td class="p-native">Sving til høyre.</td><td class="p-phon">sving til HOY-reh</td></tr>
+          <tr><td class="p-en">Go straight ahead.</td><td class="p-native">Fortsett rett frem.</td><td class="p-phon">FORT-set rett frehm</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- GERMAN -->
+    <div class="lang-panel" id="lang-german">
+      <h3>🇩🇪 German</h3>
+      <div class="phrase-group"><h4>✈️ Airport &amp; Flights</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">Where is the check-in counter for [airline]?</td><td class="p-native">Wo ist der Check-in-Schalter für [Fluggesellschaft]?</td><td class="p-phon">voh ist dair check-in-SHAL-ter fyoor</td></tr>
+          <tr><td class="p-en">Where is baggage claim?</td><td class="p-native">Wo ist die Gepäckausgabe?</td><td class="p-phon">voh ist dee geh-PECK-ows-gah-beh</td></tr>
+          <tr><td class="p-en">My luggage is lost.</td><td class="p-native">Mein Gepäck ist verloren gegangen.</td><td class="p-phon">mine geh-PECK ist fer-LOH-ren geh-GAHN-gen</td></tr>
+          <tr><td class="p-en">Where is the boarding gate [gate number]?</td><td class="p-native">Wo ist Gate [Nummer]?</td><td class="p-phon">voh ist gate NOOM-mer</td></tr>
+          <tr><td class="p-en">Is this flight on time?</td><td class="p-native">Ist dieser Flug pünktlich?</td><td class="p-phon">ist DEE-zer floog PYOONKT-likh</td></tr>
+          <tr><td class="p-en">Where is security check?</td><td class="p-native">Wo ist die Sicherheitskontrolle?</td><td class="p-phon">voh ist dee ZIH-kher-hites-kon-trol-leh</td></tr>
+          <tr><td class="p-en">Where is terminal [number]?</td><td class="p-native">Wo ist Terminal [Nummer]?</td><td class="p-phon">voh ist TAIR-mi-nahl</td></tr>
+          <tr><td class="p-en">Where is the currency exchange?</td><td class="p-native">Wo ist die Wechselstube?</td><td class="p-phon">voh ist dee VEK-sel-shtoo-beh</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🚖 Taxis &amp; Transportation</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">Take me to this address, please.</td><td class="p-native">Bringen Sie mich bitte zu dieser Adresse.</td><td class="p-phon">BRING-en zee mikh BIT-teh tsoo DEE-zer ah-DRESS-eh</td></tr>
+          <tr><td class="p-en">How much to get to [destination]?</td><td class="p-native">Wie viel kostet es bis [Ziel]?</td><td class="p-phon">vee feel KOS-tet es bis</td></tr>
+          <tr><td class="p-en">Please turn on the meter.</td><td class="p-native">Bitte schalten Sie den Taxameter ein.</td><td class="p-phon">BIT-teh SHAL-ten zee dayn tak-sah-MEH-ter ine</td></tr>
+          <tr><td class="p-en">Stop here, please.</td><td class="p-native">Halten Sie hier bitte an.</td><td class="p-phon">HAL-ten zee here BIT-teh ahn</td></tr>
+          <tr><td class="p-en">Can I pay with a credit card?</td><td class="p-native">Kann ich mit Kreditkarte bezahlen?</td><td class="p-phon">kahn ikh mit kray-DEET-kar-teh beh-TSAH-len</td></tr>
+          <tr><td class="p-en">Where is the taxi stand?</td><td class="p-native">Wo ist der Taxistand?</td><td class="p-phon">voh ist dair TAK-see-shtahnt</td></tr>
+          <tr><td class="p-en">Where is the bus stop?</td><td class="p-native">Wo ist die Bushaltestelle?</td><td class="p-phon">voh ist dee BOOS-hahl-teh-shtel-leh</td></tr>
+          <tr><td class="p-en">When is the next bus/train?</td><td class="p-native">Wann fährt der nächste Bus/Zug?</td><td class="p-phon">vahn fairt dair NEKH-steh boos/tsoog</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🚆 Train Stations &amp; Subways</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">Where is the ticket office?</td><td class="p-native">Wo ist der Fahrkartenschalter?</td><td class="p-phon">voh ist dair FAHR-kar-ten-shal-ter</td></tr>
+          <tr><td class="p-en">One ticket to [destination], please.</td><td class="p-native">Eine Fahrkarte nach [Ziel], bitte.</td><td class="p-phon">EYE-neh FAHR-kar-teh nakh ... BIT-teh</td></tr>
+          <tr><td class="p-en">Round-trip ticket to [destination], please.</td><td class="p-native">Eine Rückfahrkarte nach [Ziel], bitte.</td><td class="p-phon">EYE-neh RUCK-fahr-kar-teh nakh ... BIT-teh</td></tr>
+          <tr><td class="p-en">Which platform for the train to [destination]?</td><td class="p-native">Von welchem Gleis fährt der Zug nach [Ziel]?</td><td class="p-phon">fon VEL-khem glice fairt dair tsoog nakh</td></tr>
+          <tr><td class="p-en">Does this train stop at [station]?</td><td class="p-native">Hält dieser Zug in [Bahnhof]?</td><td class="p-phon">hehlt DEE-zer tsoog in</td></tr>
+          <tr><td class="p-en">Is this seat taken?</td><td class="p-native">Ist dieser Platz besetzt?</td><td class="p-phon">ist DEE-zer plahts beh-ZETST</td></tr>
+          <tr><td class="p-en">Where is the subway station?</td><td class="p-native">Wo ist die U-Bahn-Station?</td><td class="p-phon">voh ist dee OO-bahn-shtah-tsee-ohn</td></tr>
+          <tr><td class="p-en">How do I get to the city center?</td><td class="p-native">Wie komme ich zum Stadtzentrum?</td><td class="p-phon">vee KOM-meh ikh tsoom SHTAHT-tsen-troom</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🍽️ Restaurants &amp; Cafés</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">A table for [number] people, please.</td><td class="p-native">Einen Tisch für [Anzahl] Personen, bitte.</td><td class="p-phon">EYE-nen tish fyoor ... pair-ZOH-nen BIT-teh</td></tr>
+          <tr><td class="p-en">Can I see the menu, please?</td><td class="p-native">Kann ich die Speisekarte sehen?</td><td class="p-phon">kahn ikh dee SHPY-zeh-kar-teh ZAY-en</td></tr>
+          <tr><td class="p-en">Do you have an English menu?</td><td class="p-native">Haben Sie eine englische Speisekarte?</td><td class="p-phon">HAH-ben zee EYE-neh ENG-lish-eh SHPY-zeh-kar-teh</td></tr>
+          <tr><td class="p-en">I would like to order [food/drink].</td><td class="p-native">Ich möchte [Essen/Getränk] bestellen.</td><td class="p-phon">ikh MERKH-teh ... beh-SHTEL-len</td></tr>
+          <tr><td class="p-en">I am allergic to [ingredient].</td><td class="p-native">Ich bin allergisch gegen [Zutat].</td><td class="p-phon">ikh bin ah-LAIR-gish GAY-gen</td></tr>
+          <tr><td class="p-en">Water, please.</td><td class="p-native">Wasser, bitte.</td><td class="p-phon">VAH-ser BIT-teh</td></tr>
+          <tr><td class="p-en">The bill, please.</td><td class="p-native">Die Rechnung, bitte.</td><td class="p-phon">dee REKH-noong BIT-teh</td></tr>
+          <tr><td class="p-en">Is service included?</td><td class="p-native">Ist Bedienung inklusive?</td><td class="p-phon">ist beh-DEE-noong in-kloo-ZEE-veh</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🛍️ Stores, Shops &amp; Grocery Stores</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">How much does this cost?</td><td class="p-native">Wie viel kostet das?</td><td class="p-phon">vee feel KOS-tet dahs</td></tr>
+          <tr><td class="p-en">I am just looking, thank you.</td><td class="p-native">Ich schaue mich nur um, danke.</td><td class="p-phon">ikh SHOW-eh mikh noor oom DAHN-keh</td></tr>
+          <tr><td class="p-en">Do you have this in a different size/color?</td><td class="p-native">Haben Sie das in einer anderen Größe/Farbe?</td><td class="p-phon">HAH-ben zee dahs in EYE-ner AHN-deh-ren GRUR-seh/FAR-beh</td></tr>
+          <tr><td class="p-en">Can I pay by card?</td><td class="p-native">Kann ich mit Karte zahlen?</td><td class="p-phon">kahn ikh mit KAR-teh TSAH-len</td></tr>
+          <tr><td class="p-en">Can I get a receipt, please?</td><td class="p-native">Kann ich bitte eine Quittung bekommen?</td><td class="p-phon">kahn ikh BIT-teh EYE-neh KVIT-toong beh-KOM-men</td></tr>
+          <tr><td class="p-en">Where are the shopping carts/baskets?</td><td class="p-native">Wo sind die Einkaufswagen/Körbe?</td><td class="p-phon">voh zint dee INE-kowfs-vah-gen/KUR-beh</td></tr>
+          <tr><td class="p-en">Do you have a bag?</td><td class="p-native">Haben Sie eine Tüte?</td><td class="p-phon">HAH-ben zee EYE-neh TOO-teh</td></tr>
+          <tr><td class="p-en">Where is the scale to weigh produce?</td><td class="p-native">Wo ist die Waage für Obst und Gemüse?</td><td class="p-phon">voh ist dee VAH-geh fyoor ohpst oont geh-MOO-zeh</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🗺️ On the Street &amp; Directions</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">Where is the restroom?</td><td class="p-native">Wo ist die Toilette?</td><td class="p-phon">voh ist dee twah-LET-teh</td></tr>
+          <tr><td class="p-en">Where is the nearest ATM?</td><td class="p-native">Wo ist der nächste Geldautomat?</td><td class="p-phon">voh ist dair NEKH-steh GELT-ow-toh-maht</td></tr>
+          <tr><td class="p-en">Where is the hospital/pharmacy?</td><td class="p-native">Wo ist das Krankenhaus/die Apotheke?</td><td class="p-phon">voh ist dahs KRAHN-ken-house/dee ah-poh-TAY-keh</td></tr>
+          <tr><td class="p-en">Where is the tourist information office?</td><td class="p-native">Wo ist die Touristeninformation?</td><td class="p-phon">voh ist dee too-RIS-ten-in-for-mah-tsee-ohn</td></tr>
+          <tr><td class="p-en">I am lost. Can you help me?</td><td class="p-native">Ich habe mich verlaufen. Können Sie mir helfen?</td><td class="p-phon">ikh HAH-beh mikh fer-LOW-fen. KUR-nen zee meer HEL-fen</td></tr>
+          <tr><td class="p-en">Turn left.</td><td class="p-native">Biegen Sie links ab.</td><td class="p-phon">BEE-gen zee links ahp</td></tr>
+          <tr><td class="p-en">Turn right.</td><td class="p-native">Biegen Sie rechts ab.</td><td class="p-phon">BEE-gen zee rekhts ahp</td></tr>
+          <tr><td class="p-en">Go straight ahead.</td><td class="p-native">Gehen Sie geradeaus.</td><td class="p-phon">GAY-en zee geh-RAH-deh-ows</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ITALIAN -->
+    <div class="lang-panel" id="lang-italian">
+      <h3>🇮🇹 Italian</h3>
+      <div class="phrase-group"><h4>✈️ Airport &amp; Flights</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">Where is the check-in counter for [airline]?</td><td class="p-native">Dov'è il check-in per [compagnia aerea]?</td><td class="p-phon">doh-VEH eel check-in pehr</td></tr>
+          <tr><td class="p-en">Where is baggage claim?</td><td class="p-native">Dov'è il ritiro bagagli?</td><td class="p-phon">doh-VEH eel ree-TEE-roh bah-GAH-lyee</td></tr>
+          <tr><td class="p-en">My luggage is lost.</td><td class="p-native">Ho perso il mio bagaglio.</td><td class="p-phon">oh PEHR-soh eel MEE-oh bah-GAH-lyoh</td></tr>
+          <tr><td class="p-en">Where is the boarding gate [gate number]?</td><td class="p-native">Dov'è il gate [numero]?</td><td class="p-phon">doh-VEH eel gate NOO-meh-roh</td></tr>
+          <tr><td class="p-en">Is this flight on time?</td><td class="p-native">Questo volo è in orario?</td><td class="p-phon">KWEH-stoh VOH-loh eh een oh-RAH-ree-oh</td></tr>
+          <tr><td class="p-en">Where is security check?</td><td class="p-native">Dov'è il controllo di sicurezza?</td><td class="p-phon">doh-VEH eel kohn-TROHL-loh dee see-koo-RETS-tsah</td></tr>
+          <tr><td class="p-en">Where is terminal [number]?</td><td class="p-native">Dov'è il terminal [numero]?</td><td class="p-phon">doh-VEH eel TEHR-mee-nahl</td></tr>
+          <tr><td class="p-en">Where is the currency exchange?</td><td class="p-native">Dov'è il cambio valuta?</td><td class="p-phon">doh-VEH eel KAHM-bee-oh vah-LOO-tah</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🚖 Taxis &amp; Transportation</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">Take me to this address, please.</td><td class="p-native">Mi porti a questo indirizzo, per favore.</td><td class="p-phon">mee POR-tee ah KWEH-stoh een-dee-REETS-tsoh pehr fah-VOH-reh</td></tr>
+          <tr><td class="p-en">How much to get to [destination]?</td><td class="p-native">Quanto costa per andare a [destinazione]?</td><td class="p-phon">KWAHN-toh KOH-stah pehr ahn-DAH-reh ah</td></tr>
+          <tr><td class="p-en">Please turn on the meter.</td><td class="p-native">Accenda il tassametro, per favore.</td><td class="p-phon">ah-CHEN-dah eel tahs-sah-MEH-troh pehr fah-VOH-reh</td></tr>
+          <tr><td class="p-en">Stop here, please.</td><td class="p-native">Si fermi qui, per favore.</td><td class="p-phon">see FEHR-mee kwee pehr fah-VOH-reh</td></tr>
+          <tr><td class="p-en">Can I pay with a credit card?</td><td class="p-native">Posso pagare con la carta di credito?</td><td class="p-phon">POHS-soh pah-GAH-reh kohn lah KAR-tah dee KREH-dee-toh</td></tr>
+          <tr><td class="p-en">Where is the taxi stand?</td><td class="p-native">Dov'è la fermata dei taxi?</td><td class="p-phon">doh-VEH lah fehr-MAH-tah day TAHK-see</td></tr>
+          <tr><td class="p-en">Where is the bus stop?</td><td class="p-native">Dov'è la fermata dell'autobus?</td><td class="p-phon">doh-VEH lah fehr-MAH-tah dell-OW-toh-boos</td></tr>
+          <tr><td class="p-en">When is the next bus/train?</td><td class="p-native">Quando parte il prossimo autobus/treno?</td><td class="p-phon">KWAHN-doh PAR-teh eel PROHS-see-moh OW-toh-boos/TREH-noh</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🚆 Train Stations &amp; Subways</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">Where is the ticket office?</td><td class="p-native">Dov'è la biglietteria?</td><td class="p-phon">doh-VEH lah bee-lyet-teh-REE-ah</td></tr>
+          <tr><td class="p-en">One ticket to [destination], please.</td><td class="p-native">Un biglietto per [destinazione], per favore.</td><td class="p-phon">oon bee-LYET-toh pehr ... pehr fah-VOH-reh</td></tr>
+          <tr><td class="p-en">Round-trip ticket to [destination], please.</td><td class="p-native">Un biglietto andata e ritorno per [destinazione], per favore.</td><td class="p-phon">oon bee-LYET-toh ahn-DAH-tah eh ree-TOR-noh pehr</td></tr>
+          <tr><td class="p-en">Which platform for the train to [destination]?</td><td class="p-native">Da quale binario parte il treno per [destinazione]?</td><td class="p-phon">dah KWAH-leh bee-NAH-ree-oh PAR-teh eel TREH-noh pehr</td></tr>
+          <tr><td class="p-en">Does this train stop at [station]?</td><td class="p-native">Questo treno si ferma a [stazione]?</td><td class="p-phon">KWEH-stoh TREH-noh see FEHR-mah ah</td></tr>
+          <tr><td class="p-en">Is this seat taken?</td><td class="p-native">Questo posto è occupato?</td><td class="p-phon">KWEH-stoh POH-stoh eh oh-koo-PAH-toh</td></tr>
+          <tr><td class="p-en">Where is the subway station?</td><td class="p-native">Dov'è la stazione della metro?</td><td class="p-phon">doh-VEH lah stah-tsee-OH-neh DEHL-lah MEH-troh</td></tr>
+          <tr><td class="p-en">How do I get to the city center?</td><td class="p-native">Come arrivo al centro città?</td><td class="p-phon">KOH-meh ah-REE-voh ahl CHEN-troh cheet-TAH</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🍽️ Restaurants &amp; Cafés</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">A table for [number] people, please.</td><td class="p-native">Un tavolo per [numero] persone, per favore.</td><td class="p-phon">oon TAH-voh-loh pehr ... pehr-SOH-neh pehr fah-VOH-reh</td></tr>
+          <tr><td class="p-en">Can I see the menu, please?</td><td class="p-native">Posso vedere il menù, per favore?</td><td class="p-phon">POHS-soh veh-DEH-reh eel meh-NOO pehr fah-VOH-reh</td></tr>
+          <tr><td class="p-en">Do you have an English menu?</td><td class="p-native">Avete un menù in inglese?</td><td class="p-phon">ah-VEH-teh oon meh-NOO een een-GLEH-zeh</td></tr>
+          <tr><td class="p-en">I would like to order [food/drink].</td><td class="p-native">Vorrei ordinare [cibo/bevanda].</td><td class="p-phon">vor-RAY or-dee-NAH-reh</td></tr>
+          <tr><td class="p-en">I am allergic to [ingredient].</td><td class="p-native">Sono allergico/a a [ingrediente].</td><td class="p-phon">SOH-noh ahl-LEHR-jee-koh/kah ah</td></tr>
+          <tr><td class="p-en">Water, please.</td><td class="p-native">Acqua, per favore.</td><td class="p-phon">AH-kwah pehr fah-VOH-reh</td></tr>
+          <tr><td class="p-en">The bill, please.</td><td class="p-native">Il conto, per favore.</td><td class="p-phon">eel KOHN-toh pehr fah-VOH-reh</td></tr>
+          <tr><td class="p-en">Is service included?</td><td class="p-native">Il servizio è incluso?</td><td class="p-phon">eel sehr-VEE-tsee-oh eh een-KLOO-zoh</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🛍️ Stores, Shops &amp; Grocery Stores</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">How much does this cost?</td><td class="p-native">Quanto costa?</td><td class="p-phon">KWAHN-toh KOH-stah</td></tr>
+          <tr><td class="p-en">I am just looking, thank you.</td><td class="p-native">Sto solo guardando, grazie.</td><td class="p-phon">stoh SOH-loh gwar-DAHN-doh GRAHT-tsee-eh</td></tr>
+          <tr><td class="p-en">Do you have this in a different size/color?</td><td class="p-native">Avete questo in un'altra taglia/colore?</td><td class="p-phon">ah-VEH-teh KWEH-stoh een oon-AHL-trah TAH-lyah/koh-LOH-reh</td></tr>
+          <tr><td class="p-en">Can I pay by card?</td><td class="p-native">Posso pagare con la carta?</td><td class="p-phon">POHS-soh pah-GAH-reh kohn lah KAR-tah</td></tr>
+          <tr><td class="p-en">Can I get a receipt, please?</td><td class="p-native">Posso avere lo scontrino, per favore?</td><td class="p-phon">POHS-soh ah-VEH-reh loh skohn-TREE-noh pehr fah-VOH-reh</td></tr>
+          <tr><td class="p-en">Where are the shopping carts/baskets?</td><td class="p-native">Dove sono i carrelli/cestini?</td><td class="p-phon">DOH-veh SOH-noh ee kar-REL-lee/cheh-STEE-nee</td></tr>
+          <tr><td class="p-en">Do you have a bag?</td><td class="p-native">Avete un sacchetto?</td><td class="p-phon">ah-VEH-teh oon sahk-KET-toh</td></tr>
+          <tr><td class="p-en">Where is the scale to weigh produce?</td><td class="p-native">Dov'è la bilancia per pesare la frutta e verdura?</td><td class="p-phon">doh-VEH lah bee-LAHN-chah pehr peh-SAH-reh lah FROOT-tah eh vehr-DOO-rah</td></tr>
+        </table>
+      </div>
+      <div class="phrase-group"><h4>🗺️ On the Street &amp; Directions</h4>
+        <table class="phrase-table">
+          <tr><td class="p-en">Where is the restroom?</td><td class="p-native">Dov'è il bagno?</td><td class="p-phon">doh-VEH eel BAHN-yoh</td></tr>
+          <tr><td class="p-en">Where is the nearest ATM?</td><td class="p-native">Dov'è il bancomat più vicino?</td><td class="p-phon">doh-VEH eel bahn-koh-MAHT pyoo vee-CHEE-noh</td></tr>
+          <tr><td class="p-en">Where is the hospital/pharmacy?</td><td class="p-native">Dov'è l'ospedale/la farmacia?</td><td class="p-phon">doh-VEH loh-speh-DAH-leh/lah far-mah-CHEE-ah</td></tr>
+          <tr><td class="p-en">Where is the tourist information office?</td><td class="p-native">Dov'è l'ufficio informazioni turistiche?</td><td class="p-phon">doh-VEH loo-FEE-choh een-for-mah-tsee-OH-nee too-REE-stee-keh</td></tr>
+          <tr><td class="p-en">I am lost. Can you help me?</td><td class="p-native">Mi sono perso/a. Puoi aiutarmi?</td><td class="p-phon">mee SOH-noh PEHR-soh/sah. PWOY ah-yoo-TAR-mee</td></tr>
+          <tr><td class="p-en">Turn left.</td><td class="p-native">Gira a sinistra.</td><td class="p-phon">JEE-rah ah see-NEE-strah</td></tr>
+          <tr><td class="p-en">Turn right.</td><td class="p-native">Gira a destra.</td><td class="p-phon">JEE-rah ah DEH-strah</td></tr>
+          <tr><td class="p-en">Go straight ahead.</td><td class="p-native">Vai dritto.</td><td class="p-phon">vye DREET-toh</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CURRENCY ============ -->
+  <section class="tab-panel" id="currency" data-print-title="Currency Reference">
+    <div class="flag warn"><b>Static reference rate — not live.</b> $1 ≈ €0.87 ≈ 9.53 kr, sourced from Bloomberg / Xe.com, <b>Aug 5, 2026</b>. Exchange rates move daily — this is a ballpark for trip budgeting, not what you'll get at an ATM or register. Verify current rates before exchanging money.</div>
+
+    <div class="calc-card">
+      <div class="calc-row">
+        <span class="calc-flag">🇺🇸</span><span class="calc-label">USD</span>
+        <input type="number" id="calcUSD" value="100" inputmode="decimal">
+      </div>
+      <div class="calc-row">
+        <span class="calc-flag">🇪🇺</span><span class="calc-label">EUR</span>
+        <input type="number" id="calcEUR" value="87" inputmode="decimal">
+      </div>
+      <div class="calc-row">
+        <span class="calc-flag">🇳🇴</span><span class="calc-label">NOK</span>
+        <input type="number" id="calcNOK" value="953" inputmode="decimal">
+      </div>
+      <div class="rate-note">Type in any field — the other two update automatically.</div>
+    </div>
+
+    <h2 class="section">Quick reference</h2>
+    <table class="btable">
+      <tr><td class="b-what">$10</td><td class="b-when">≈ €8.70</td><td class="b-when">≈ 95 kr</td></tr>
+      <tr><td class="b-what">$20</td><td class="b-when">≈ €17.40</td><td class="b-when">≈ 191 kr</td></tr>
+      <tr><td class="b-what">$50</td><td class="b-when">≈ €43.50</td><td class="b-when">≈ 477 kr</td></tr>
+      <tr><td class="b-what">$100</td><td class="b-when">≈ €87</td><td class="b-when">≈ 953 kr</td></tr>
+      <tr><td class="b-what">$200</td><td class="b-when">≈ €174</td><td class="b-when">≈ 1,906 kr</td></tr>
+    </table>
+  </section>
+
   <!-- ============ TRANSPORT ============ -->
   <section class="tab-panel" id="transport" data-print-title="Airport Transportation">
     <div class="flag info">Chosen option for each leg. <b>Oslo (Aug 17) and Rome (Aug 26) arrivals are by train</b> — both Airbnbs ~5-min walk from the station, no transport needed.</div>
@@ -902,7 +1274,7 @@
   });
   overlay.addEventListener('click', closeSidebar);
 
-  const tabs = document.querySelectorAll('#tabs button');
+  const tabs = document.querySelectorAll('#tabs button[data-tab]');
   const panels = document.querySelectorAll('.tab-panel');
   tabs.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -941,6 +1313,53 @@
     document.body.classList.remove('print-all');
   }
   window.addEventListener('afterprint', restoreAfterPrint);
+
+  // Language print-inclusion toggle (off by default)
+  const includeLangPrint = document.getElementById('includeLangPrint');
+  const languagesSection = document.getElementById('languages');
+  includeLangPrint.addEventListener('change', () => {
+    languagesSection.classList.toggle('include-in-print', includeLangPrint.checked);
+  });
+
+  // Language picker
+  document.querySelectorAll('.lang-picker button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.dataset.lang;
+      document.querySelectorAll('.lang-picker button').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.lang-panel').forEach(p => p.classList.toggle('active', p.id === 'lang-' + lang));
+    });
+  });
+
+  // Currency calculator — static rates as of Aug 5, 2026 (Bloomberg / Xe.com)
+  // 1 USD = 0.87 EUR · 1 USD = 9.53 NOK · EUR<->NOK derived via USD so all three stay consistent
+  (function () {
+    const usdToEur = 0.87, usdToNok = 9.53;
+    const usd = document.getElementById('calcUSD');
+    const eur = document.getElementById('calcEUR');
+    const nok = document.getElementById('calcNOK');
+    function fromUSD(v) {
+      usd.value = v.toFixed(2);
+      eur.value = (v * usdToEur).toFixed(2);
+      nok.value = (v * usdToNok).toFixed(2);
+    }
+    usd.addEventListener('input', () => {
+      const v = parseFloat(usd.value); if (isNaN(v)) return;
+      eur.value = (v * usdToEur).toFixed(2);
+      nok.value = (v * usdToNok).toFixed(2);
+    });
+    eur.addEventListener('input', () => {
+      const v = parseFloat(eur.value); if (isNaN(v)) return;
+      const v_usd = v / usdToEur;
+      usd.value = v_usd.toFixed(2);
+      nok.value = (v_usd * usdToNok).toFixed(2);
+    });
+    nok.addEventListener('input', () => {
+      const v = parseFloat(nok.value); if (isNaN(v)) return;
+      const v_usd = v / usdToNok;
+      usd.value = v_usd.toFixed(2);
+      eur.value = (v_usd * usdToEur).toFixed(2);
+    });
+  })();
 </script>
 </body>
 </html>
